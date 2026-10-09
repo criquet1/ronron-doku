@@ -401,7 +401,7 @@ function render() {
   msg.textContent = won ? '😻 Réussi ! Tous les chats sont bien placés. Miaou !' : '';
   msg.classList.toggle('win', won);
   document.getElementById('counter').textContent = `Chats : ${count} / ${N}` +
-    (bad.size > 0 ? '   ⚠️ des chats se gênent' : '');
+    (bad.size > 0 ? '  ⚠️ ça se touche' : '');
   document.getElementById('game-code').textContent = gameCode ? 'Code de la partie : ' + gameCode : '';
   saveGame();
 }

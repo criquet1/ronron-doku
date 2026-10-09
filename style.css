@@ -124,7 +124,9 @@ body.vanish .cell.x:hover { filter: none; background: rgba(0,0,0,0.04) !importan
   #side h1 { font-size: 20px; margin: 4px 0; }
   #side .controls { gap: 2px; margin-bottom: 6px; }
   #side button, #side select { font-size: 14px; padding: 6px 10px; margin: 2px; }
-  #status { min-height: 0; margin-bottom: 6px; }
+  #status { min-height: 40px; margin-bottom: 6px; }
+  #counter { white-space: nowrap; font-size: 16px; }
+  #message.win { position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 20; margin: 0; box-shadow: 0 4px 14px rgba(0,0,0,0.3); }
   #layout { gap: 8px; }
   #board { padding: 8px; border-radius: 14px; }
   .credit { margin-top: 8px; }
