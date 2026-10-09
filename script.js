@@ -373,7 +373,7 @@ function render() {
   board.style.gap = N > 10 ? '3px' : '6px';
   board.style.setProperty('--fs', N > 10 ? 'clamp(11px, 3vw, 22px)' : 'clamp(18px, 6vw, 34px)');
   board.style.maxWidth = N > 10 ? '700px' : '560px';
-  board.innerHTML = '';
+  const frag = document.createDocumentFragment();
   const { bad, count } = findConflicts();
   const blocked = autoBlocked();
 
@@ -393,8 +393,9 @@ function render() {
     }
     else if (marks[i] === 1 || blocked.has(i)) { cell.textContent = MARK; cell.classList.add('x'); }
     cell.dataset.i = i;
-    board.appendChild(cell);
+    frag.appendChild(cell);
   }
+  board.replaceChildren(frag);
 
   won = (count === N && bad.size === 0);
   const msg = document.getElementById('message');

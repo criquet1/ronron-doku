@@ -137,3 +137,6 @@ body.vanish .cell.x:hover { filter: none; background: rgba(0,0,0,0.04) !importan
 #code-box .code-row { display: flex; flex-wrap: wrap; align-items: center; }
 #code-input { font-size: 15px; padding: 7px 10px; margin: 3px; border-radius: 8px; border: 2px solid #b5651d; width: 150px; }
 #code-msg { display: block; color: #b23a3a; margin: 2px 3px; }
+
+/* Évite que la page saute quand la grille est redessinée */
+html, body, #board { overflow-anchor: none; }
