@@ -3,13 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>Ronron-doku</title>
-  <meta name="description" content="Ronron-doku : un jeu de logique gratuit. Place un chat dans chaque rangée, chaque colonne et chaque zone de couleur, sans que deux chats se touchent. Grilles de 5 × 5 à 15 × 15, croix posées automatiquement, glisser pour poser des croix, bouton Reculer.">
+  <title>Ronron-doku – jeu de logique gratuit avec des chats</title>
+  <meta name="description" content="Ronron-doku : jeu de logique gratuit à jouer dans le navigateur. Place un chat dans chaque rangée, colonne et zone de couleur, sans que deux chats se touchent. Grilles de 5 × 5 à 15 × 15, indices expliqués pas à pas, codes de partie à partager.">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Ronron-doku">
-  <meta property="og:description" content="Un jeu de logique avec des chats : un chat par rangée, par colonne et par zone de couleur, sans que deux chats se touchent. Grilles de 5 × 5 à 15 × 15.">
-  <meta property="og:image" content="https://ronron-doku.onrender.com/cat.png">
-  <meta property="og:url" content="https://ronron-doku.onrender.com/">
+  <meta property="og:title" content="Ronron-doku – jeu de logique gratuit avec des chats">
+  <meta property="og:description" content="Un chat par rangée, par colonne et par zone de couleur, sans que deux chats se touchent. Grilles de 5 × 5 à 15 × 15, indices expliqués pas à pas, codes de partie à partager.">
+  <meta property="og:image" content="https://ronrondoku.ca/cat.png">
+  <meta property="og:url" content="https://ronrondoku.ca/">
+  <meta property="og:locale" content="fr_CA">
+  <link rel="canonical" href="https://ronrondoku.ca/">
   <link rel="icon" href="cat.png" type="image/png">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -17,6 +19,7 @@
   <div id="layout">
     <aside id="side">
       <h1>🐾 Ronron-doku 🐾</h1>
+      <p class="tagline">Jeu de logique avec des chats · grilles de 5 × 5 jusqu'à 15 × 15</p>
 
       <div class="controls">
         <select id="size">
@@ -94,7 +97,22 @@
     </main>
   </div>
 
-    <div id="hint-box" hidden>
+  <section id="about">
+    <h2>À propos de Ronron-doku</h2>
+    <p>Ronron-doku est un jeu de logique gratuit qui se joue directement dans le navigateur, sur ordinateur comme sur téléphone, sans inscription et sans publicité.</p>
+    <p><b>Le but :</b> placer un chat dans chaque rangée, chaque colonne et chaque zone de couleur, sans que deux chats se touchent, même en diagonale. Chaque grille a une seule solution.</p>
+    <ul>
+      <li>Des grilles de 5 × 5 jusqu'à 15 × 15.</li>
+      <li>Les ✖ se placent automatiquement autour des chats, et on peut aussi faire disparaître les cases exclues.</li>
+      <li>Un bouton « Indice » qui explique le raisonnement pas à pas.</li>
+      <li>Un bouton « Reculer » pour annuler autant de coups qu'on veut.</li>
+      <li>Un code de partie : avec le même code, on retrouve la même grille sur n'importe quel appareil.</li>
+      <li>Plusieurs palettes de couleurs, avec choix des couleurs de chaque zone.</li>
+      <li>Ta partie en cours est gardée automatiquement.</li>
+    </ul>
+  </section>
+
+  <div id="hint-box" hidden>
     <p id="hint-text"></p>
     <div class="hint-actions">
       <button id="hint-apply">Appliquer</button>
