@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Meowdoku</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="layout">
+    <aside id="side">
+      <h1>🐾 Meowdoku 🐾</h1>
+
+      <div class="controls">
+        <select id="size">
+          <option value="5">5 × 5</option>
+          <option value="6">6 × 6</option>
+          <option value="7" selected>7 × 7</option>
+          <option value="8">8 × 8</option>
+          <option value="9">9 × 9</option>
+          <option value="10">10 × 10</option>
+          <option value="12">12 × 12</option>
+          <option value="15">15 × 15</option>
+        </select>
+        <button id="new-game">Nouvelle partie</button>
+        <button id="undo">↩ Reculer</button>
+        <button id="reset">Recommencer</button>
+        <button id="rules-btn">📖 Règles du jeu</button>
+        <button id="settings-btn">⚙️ Paramètres</button>
+      </div>
+
+      <div id="rules-panel" class="panel" hidden>
+        <h2>Règles du jeu</h2>
+        <p>Place <b>un chat</b> dans chaque rangée, chaque colonne et chaque zone de couleur.
+        Deux chats ne doivent jamais se toucher, même en diagonale.</p>
+        <p>Clique une case : ✖ (exclue), puis 🐱 (chat), puis vide.</p>
+        <p>Les ✖ se placent tout seuls autour de chaque chat.</p>
+        <p>Tu peux aussi glisser sur plusieurs cases pour y poser des ✖.</p>
+        <button id="rules-close">Fermer</button>
+      </div>
+
+      <div id="settings-panel" class="panel" hidden>
+        <h2>Paramètres</h2>
+        <label><input type="checkbox" id="opt-counter" checked> Afficher le compteur de chats</label>
+        <label><input type="checkbox" id="opt-vanish"> Effacer les cases exclues (au lieu de ✖)</label>
+        <button id="settings-close">Fermer</button>
+      </div>
+
+      <div id="status">
+        <span id="counter"></span>
+        <p id="message"></p>
+      </div>
+    </aside>
+
+    <main id="board-area">
+      <div id="loading" hidden>
+        <div class="spinner"></div>
+        <p>Création de la grille…<br>Les grandes grilles prennent quelques secondes.</p>
+      </div>
+      <div id="board"></div>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
