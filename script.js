@@ -506,16 +506,21 @@ function paintX(i) {
   if (i !== null && marks[i] === 0) { marks[i] = 1; render(); }
 }
 
+// Au doigt, glisser pour poser des ✖ n'est actif que si on a allumé le mode « glisser ».
+// (Sinon, le doigt sert à faire défiler la page.) La souris glisse toujours.
+let dragMode = false;
+const canDrag = (e) => e.pointerType === 'mouse' || dragMode;
+
 boardEl.addEventListener('pointerdown', (e) => {
   const i = cellAt(e);
   if (i === null) return;
   pressed = i;
   dragging = false;
-  boardEl.setPointerCapture(e.pointerId);
+  if (canDrag(e)) boardEl.setPointerCapture(e.pointerId);
 });
 
 boardEl.addEventListener('pointermove', (e) => {
-  if (pressed === null || won) return;
+  if (pressed === null || won || !canDrag(e)) return;
   const i = cellAt(e);
   if (i === null) return;
   if (!dragging && i !== pressed) {
@@ -534,6 +539,12 @@ boardEl.addEventListener('pointerup', () => {
 boardEl.addEventListener('pointercancel', () => { pressed = null; dragging = false; });
 
 document.getElementById('undo').addEventListener('click', undo);
+document.getElementById('drag-btn').addEventListener('click', (e) => {
+  dragMode = !dragMode;
+  boardEl.classList.toggle('drag-mode', dragMode);
+  e.target.classList.toggle('on', dragMode);
+  e.target.textContent = '🖌️ Glisser pour ✖ : ' + (dragMode ? 'oui' : 'non');
+});
 // ===== Paramètres =====
 const settings = { counter: true, vanish: false, palette: 'douce', custom: null };
 
