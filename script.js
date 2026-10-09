@@ -27,7 +27,7 @@ let history = [];   // anciens états, pour le bouton Reculer
 // ===== Génération =====
 function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(rng() * (i + 1));
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
   return arr;
@@ -69,8 +69,8 @@ function randomRegions(n, cols) {
       if (c < n - 1 && reg[i + 1] !== -1) neighbors.push(reg[i + 1]);
       if (neighbors.length) candidates.push([i, neighbors]);
     }
-    const [cell, nb] = candidates[Math.floor(Math.random() * candidates.length)];
-    reg[cell] = nb[Math.floor(Math.random() * nb.length)];
+    const [cell, nb] = candidates[Math.floor(rng() * candidates.length)];
+    reg[cell] = nb[Math.floor(rng() * nb.length)];
     left--;
   }
   return reg;
@@ -78,7 +78,7 @@ function randomRegions(n, cols) {
 
 // Compte les solutions (s'arrête à `limit`).
 // À chaque étape, on choisit la rangée, colonne ou zone qui a le moins de cases libres.
-function countSolutions(n, reg, limit = 2, sols = null) {
+function countSolutions(n, reg, limit = 2, sols = null, maxNodes = Infinity) {
   const total = n * n;
   const blocked = new Int16Array(total);
   const rowDone = new Array(n).fill(false);
@@ -88,6 +88,8 @@ function countSolutions(n, reg, limit = 2, sols = null) {
   for (let i = 0; i < total; i++) regCells[reg[i]].push(i);
   const placed = new Array(n).fill(-1); // colonne du chat de chaque rangée
   let count = 0;
+  let nodes = 0;
+  let aborted = false; // vrai si on a dépassé le budget de travail
 
   function cover(i, delta) {
     const r = Math.floor(i / n), c = i % n;
@@ -102,7 +104,8 @@ function countSolutions(n, reg, limit = 2, sols = null) {
   }
 
   function go(done) {
-    if (count >= limit) return;
+    if (count >= limit || aborted) return;
+    if (++nodes > maxNodes) { aborted = true; return; }
     if (done === n) {
       count++;
       if (sols) sols.push(placed.slice());
@@ -142,11 +145,11 @@ function countSolutions(n, reg, limit = 2, sols = null) {
       cover(i, -1);
       placed[r] = -1;
       rowDone[r] = colDone[c] = regDone[reg[i]] = false;
-      if (count >= limit) return;
+      if (count >= limit || aborted) return;
     }
   }
   go(0);
-  return count;
+  return aborted ? -1 : count; // -1 = « trop long, je ne sais pas »
 }
 
 // Est-ce que la zone `g` reste d'un seul morceau si on retire la case `skip` ?
@@ -176,7 +179,7 @@ function stillConnected(n, reg, g, skip) {
 // Déplace une case frontière vers une zone voisine (garde les zones d'un seul morceau)
 function mutate(n, reg, cols) {
   for (let tries = 0; tries < 200; tries++) {
-    const i = Math.floor(Math.random() * n * n);
+    const i = Math.floor(rng() * n * n);
     const r = Math.floor(i / n), c = i % n;
     if (cols[r] === c) continue; // jamais la case du chat de départ
     const nbs = [];
@@ -188,7 +191,7 @@ function mutate(n, reg, cols) {
     if (others.length === 0) continue;
     if (!stillConnected(n, reg, reg[i], i)) continue;
     const old = reg[i];
-    reg[i] = others[Math.floor(Math.random() * others.length)];
+    reg[i] = others[Math.floor(rng() * others.length)];
     return [i, old];
   }
   return null;
@@ -219,23 +222,42 @@ function breakAlt(n, reg, cols, alt) {
   return false;
 }
 
-function generate(n) {
-  for (let restart = 0; restart < 60; restart++) {
+// Générateur de hasard « à graine » : la même graine donne toujours la même suite de nombres,
+// donc la même grille, sur n'importe quel appareil.
+let rng = Math.random;
+
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+// Fabrique la grille du code (taille n, graine seed). Aucun chronomètre ici :
+// le résultat ne dépend que de la graine.
+function generate(n, seed) {
+  rng = mulberry32(seed);
+  const maxSteps = n >= 12 ? 150 : 400;     // essais de correction avant de repartir de zéro
+  const maxNodes = n >= 12 ? 2500 : 20000;  // travail maximal du calculateur par essai
+  for (let restart = 0; restart < 300; restart++) {
     const cols = randomPlacement(n);
     const reg = randomRegions(n, cols);
-    const deadline = Date.now() + 1200; // abandonne un essai trop long
-    for (let step = 0; step < 3000 && Date.now() < deadline; step++) {
+    for (let step = 0; step < maxSteps; step++) {
       const sols = [];
-      countSolutions(n, reg, 2, sols);
+      if (countSolutions(n, reg, 2, sols, maxNodes) === -1) break; // trop coûteux : on repart de zéro
       const alt = sols.find(sol => sol.some((c, r) => c !== cols[r]));
-      if (!alt) return { cols, reg }; // solution unique !
+      if (!alt) { rng = Math.random; return { cols, reg }; } // solution unique !
       if (!breakAlt(n, reg, cols, alt)) {
         if (!mutate(n, reg, cols)) break;
       }
     }
   }
   const cols = randomPlacement(n);
-  return { cols, reg: randomRegions(n, cols) };
+  const out = { cols, reg: randomRegions(n, cols) };
+  rng = Math.random;
+  return out;
 }
 
 // ===== Couleurs des zones =====
@@ -380,6 +402,7 @@ function render() {
   msg.classList.toggle('win', won);
   document.getElementById('counter').textContent = `Chats : ${count} / ${N}` +
     (bad.size > 0 ? '   ⚠️ des chats se gênent' : '');
+  document.getElementById('game-code').textContent = gameCode ? 'Code de la partie : ' + gameCode : '';
   saveGame();
 }
 
@@ -424,7 +447,7 @@ function saveGame() {
   if (!regions.length) return;
   try {
     localStorage.setItem(GAME_KEY, JSON.stringify({
-      N, regions, marks, regionSlot,
+      N, regions, marks, regionSlot, gameCode,
       history: history.slice(-100)   // les 100 derniers pas pour « Reculer »
     }));
   } catch (e) { /* pas grave si le navigateur refuse */ }
@@ -440,6 +463,8 @@ function restoreGame() {
     if (!d.regions.every(r => Number.isInteger(r) && r >= 0 && r < d.N)) return false;
     if (!d.marks.every(m => m === 0 || m === 1 || m === 2)) return false;
     N = d.N;
+    const savedCode = parseCode(d.gameCode);
+    gameCode = savedCode && savedCode.size === d.N ? d.gameCode : '';
     regions = d.regions;
     marks = d.marks;
     history = Array.isArray(d.history) ? d.history.filter(h => okArray(h, total)) : [];
@@ -458,10 +483,42 @@ function restoreGame() {
   }
 }
 
+// ===== Code de partie =====
+const SIZES = [5, 6, 7, 8, 9, 10, 12, 15];
+let gameCode = ''; // ex. « 7-48213 » = grille 7 × 7, graine 48213
+
+function makeCode(size, seed) { return size + '-' + seed; }
+
+// Accepte « 7-48213 », ou un lien complet contenant « ?partie=7-48213 »
+function parseCode(text) {
+  if (typeof text !== 'string') return null;
+  const link = text.match(/partie=([^&\s#]+)/);
+  const raw = decodeURIComponent(link ? link[1] : text).trim();
+  const m = raw.match(/^(\d{1,2})\s*[-\u2013]\s*(\d{1,7})$/);
+  if (!m) return null;
+  const size = parseInt(m[1]), seed = parseInt(m[2]);
+  if (!SIZES.includes(size) || seed < 1) return null;
+  return { size, seed };
+}
+
+function updateUrl() {
+  if (!gameCode) return;
+  try { window.history.replaceState(null, '', '?partie=' + gameCode); } catch (e) {}
+}
+
+function shareLink() {
+  return location.origin + location.pathname + '?partie=' + gameCode;
+}
+
 let generating = false;
 
-function newGame() {
+function newGame(codeText) {
   if (generating) return;
+  const parsed = typeof codeText === 'string' ? parseCode(codeText) : null;
+  const sizeSelect = document.getElementById('size');
+  const size = parsed ? parsed.size : parseInt(sizeSelect.value);
+  const seed = parsed ? parsed.seed : Math.floor(Math.random() * 900000) + 100000;
+  if (parsed) sizeSelect.value = String(size);
   generating = true;
   const loading = document.getElementById('loading');
   const board = document.getElementById('board');
@@ -469,10 +526,12 @@ function newGame() {
   board.style.display = 'none';
   // petit délai pour laisser le navigateur afficher le message avant le calcul
   setTimeout(() => {
-    N = parseInt(document.getElementById('size').value);
-    const { cols, reg } = generate(N);
+    N = size;
+    const { cols, reg } = generate(N, seed);
     solutionCols = cols;
     regions = reg;
+    gameCode = makeCode(size, seed);
+    updateUrl();
     regionSlot = assignSlots(N, regions, activePalette());
     buildColorEditor();
     marks = new Array(N * N).fill(0);
@@ -597,11 +656,53 @@ document.getElementById('color-reset').addEventListener('click', () => {
 
 loadSettings();
 applySettings();
-document.getElementById('new-game').addEventListener('click', newGame);
-document.getElementById('size').addEventListener('change', newGame);
+document.getElementById('new-game').addEventListener('click', () => newGame());
+document.getElementById('size').addEventListener('change', () => newGame());
+
+const codeMsg = document.getElementById('code-msg');
+const codeInput = document.getElementById('code-input');
+document.getElementById('copy-link').addEventListener('click', async (e) => {
+  if (!gameCode) return;
+  const btn = e.currentTarget;
+  try {
+    await navigator.clipboard.writeText(shareLink());
+    btn.textContent = '✓ Lien copié';
+    setTimeout(() => { btn.textContent = '📋 Copier le lien'; }, 2000);
+  } catch (err) {
+    codeInput.value = shareLink(); // si la copie automatique est refusée, on l'affiche
+    codeInput.select();
+    codeMsg.textContent = 'Copie automatique impossible : copie le lien ci-dessus.';
+  }
+});
+function playCode() {
+  if (!parseCode(codeInput.value)) {
+    codeMsg.textContent = 'Code invalide. Exemple : 7-48213 (les tailles possibles : ' + SIZES.join(', ') + ')';
+    return;
+  }
+  codeMsg.textContent = '';
+  newGame(codeInput.value);
+  codeInput.value = '';
+}
+document.getElementById('code-go').addEventListener('click', playCode);
+codeInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') playCode(); });
 document.getElementById('reset').addEventListener('click', resetBoard);
 document.addEventListener('keydown', (e) => {
+  if (e.target && e.target.tagName === 'INPUT') return;
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); }
 });
 
-if (!restoreGame()) newGame();
+// Démarrage : un lien avec un code (?partie=7-48213) a priorité sur la partie sauvegardée,
+// sauf si c'est la même grille (on reprend alors ta partie en cours).
+(function start() {
+  let urlCode = null;
+  try { urlCode = new URLSearchParams(location.search).get('partie'); } catch (e) {}
+  const wanted = urlCode ? parseCode(urlCode) : null;
+  const restored = restoreGame();
+  if (wanted) {
+    if (!(restored && gameCode === makeCode(wanted.size, wanted.seed))) newGame(urlCode);
+  } else if (!restored) {
+    newGame();
+  } else {
+    updateUrl();
+  }
+})();
