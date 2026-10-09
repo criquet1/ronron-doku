@@ -117,8 +117,6 @@ body.vanish .cell.x:hover { filter: none; background: rgba(0,0,0,0.04) !importan
 #color-grid input[type="color"] { width: 40px; height: 40px; padding: 0; border: 2px solid #b5651d; border-radius: 8px; background: none; cursor: pointer; }
 
 /* Doigt sur la grille : la page défile normalement, sauf si le mode « glisser » est actif */
-#board.drag-mode { touch-action: none; }
-#drag-btn.on { background: #b5651d; color: white; }
 
 /* Petits écrans (téléphone) : on compacte pour voir la grille plus tôt */
 @media (max-width: 800px) {
