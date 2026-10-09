@@ -380,6 +380,7 @@ function render() {
   msg.classList.toggle('win', won);
   document.getElementById('counter').textContent = `Chats : ${count} / ${N}` +
     (bad.size > 0 ? '   ⚠️ des chats se gênent' : '');
+  saveGame();
 }
 
 // ===== Actions =====
@@ -414,6 +415,47 @@ function clickCell(i) {
   else if (showsX) marks[i] = 2;         // ✖ -> chat
   else { marks[i] = 1; lastBlankToX = i; } // vide -> ✖
   render();
+}
+
+// ===== Sauvegarde de la partie en cours =====
+const GAME_KEY = 'ronron-doku-partie-v1';
+
+function saveGame() {
+  if (!regions.length) return;
+  try {
+    localStorage.setItem(GAME_KEY, JSON.stringify({
+      N, regions, marks, regionSlot,
+      history: history.slice(-100)   // les 100 derniers pas pour « Reculer »
+    }));
+  } catch (e) { /* pas grave si le navigateur refuse */ }
+}
+
+function restoreGame() {
+  try {
+    const d = JSON.parse(localStorage.getItem(GAME_KEY));
+    if (!d || !Number.isInteger(d.N) || d.N < 4 || d.N > 15) return false;
+    const total = d.N * d.N;
+    const okArray = (a, len) => Array.isArray(a) && a.length === len;
+    if (!okArray(d.regions, total) || !okArray(d.marks, total)) return false;
+    if (!d.regions.every(r => Number.isInteger(r) && r >= 0 && r < d.N)) return false;
+    if (!d.marks.every(m => m === 0 || m === 1 || m === 2)) return false;
+    N = d.N;
+    regions = d.regions;
+    marks = d.marks;
+    history = Array.isArray(d.history) ? d.history.filter(h => okArray(h, total)) : [];
+    lastBlankToX = null;
+    const palette = activePalette();
+    const slotsOk = okArray(d.regionSlot, d.N) &&
+      d.regionSlot.every(x => Number.isInteger(x) && x >= 0 && x < palette.length);
+    regionSlot = slotsOk ? d.regionSlot : assignSlots(N, regions, palette);
+    const sizeSelect = document.getElementById('size');
+    if ([...sizeSelect.options].some(o => parseInt(o.value) === N)) sizeSelect.value = String(N);
+    buildColorEditor();
+    render();
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
 
 let generating = false;
@@ -551,4 +593,4 @@ document.addEventListener('keydown', (e) => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); }
 });
 
-newGame();
+if (!restoreGame()) newGame();
