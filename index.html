@@ -50,6 +50,20 @@
         <h2>Paramètres</h2>
         <label><input type="checkbox" id="opt-counter" checked> Afficher le compteur de chats</label>
         <label><input type="checkbox" id="opt-vanish"> Effacer les cases exclues (au lieu de ✖)</label>
+        <label>Palette de couleurs :
+          <select id="opt-palette">
+            <option value="douce">Douce</option>
+            <option value="vive">Vive</option>
+            <option value="mixte">Mixte (vive et pastel)</option>
+            <option value="pastel">Pastel</option>
+          </select>
+        </label>
+        <button id="color-edit-btn">🎨 Choisir les couleurs une par une</button>
+        <div id="color-editor" hidden>
+          <p>Clique sur une couleur pour la changer. Une couleur par zone de la grille actuelle.</p>
+          <div id="color-grid"></div>
+          <button id="color-reset">Rétablir la palette</button>
+        </div>
         <button id="settings-close">Fermer</button>
       </div>
 
@@ -57,7 +71,7 @@
         <span id="counter"></span>
         <p id="message"></p>
       </div>
-      <p class="credit">Image du chat : <a href="https://www.magnific.com/fr/vecteurs-libre/caricature-chat-mignon-noir_48121656.htm" target="_blank" rel="noopener">brgfx sur Magnific</a></p>
+      <p class="credit">Image du chat, gracieuseté de : <a href="https://www.magnific.com/fr/vecteurs-libre/caricature-chat-mignon-noir_48121656.htm" target="_blank" rel="noopener">brgfx sur Magnific</a></p>
     </aside>
 
     <main id="board-area">

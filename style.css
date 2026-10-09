@@ -111,3 +111,8 @@ body.vanish .cell.x:hover { filter: none; background: rgba(0,0,0,0.04) !importan
 }
 .credit { font-size: 13px; color: #7a6a5a; margin-top: 16px; }
 .credit a { color: #b5651d; }
+
+#color-editor { margin: 8px 0; }
+#color-editor p { font-size: 14px; color: #5d3a1a; margin: 6px 0; }
+#color-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+#color-grid input[type="color"] { width: 40px; height: 40px; padding: 0; border: 2px solid #b5651d; border-radius: 8px; background: none; cursor: pointer; }

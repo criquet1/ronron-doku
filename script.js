@@ -1,7 +1,18 @@
 // ===== Réglages =====
-const COLORS = ['#e2b848', '#e6a5c0', '#c2688b', '#9378d0', '#7fb6d8',
-                '#8fcf9a', '#e89b6b', '#6fc1b8', '#b5b5b5', '#d96b5f',
-                '#4f8fc0', '#a9c75a', '#7a5c9e', '#c9a27e', '#5aa58b'];
+const PALETTES = {
+  douce: ['#e2b848', '#e6a5c0', '#c2688b', '#9378d0', '#7fb6d8',
+          '#8fcf9a', '#e89b6b', '#6fc1b8', '#b5b5b5', '#d96b5f',
+          '#4f8fc0', '#a9c75a', '#7a5c9e', '#c9a27e', '#5aa58b'],
+  vive:  ['#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231',
+          '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabed4',
+          '#008080', '#dcbeff', '#9a6324', '#fffac8', '#aaffc3'],
+  mixte: ['#e6194b', '#aaffc3', '#4363d8', '#fffac8', '#f58231',
+          '#dcbeff', '#3cb44b', '#fabed4', '#46f0f0', '#ffd3b6',
+          '#a64dd1', '#bae1ff', '#ffe119', '#d4a5a5', '#bcf60c'],
+  pastel: ['#ffb3ba', '#ffdfba', '#ffffba', '#baffc9', '#bae1ff',
+           '#e0bbe4', '#d4a5a5', '#a8e6cf', '#ffd3b6', '#c7ceea',
+           '#f8c8dc', '#b5ead7', '#fdfd96', '#cfcfc4', '#aec6cf']
+};
 const CAT_IMAGE = 'cat.png';
 const MARK = '✖';
 
@@ -227,6 +238,76 @@ function generate(n) {
   return { cols, reg: randomRegions(n, cols) };
 }
 
+// ===== Couleurs des zones =====
+let regionSlot = []; // numéro de couleur (dans la palette) de chaque zone
+
+function activePalette() {
+  return settings.custom || PALETTES[settings.palette] || PALETTES.douce;
+}
+
+function hexToRgb(h) {
+  return [1, 3, 5].map(k => parseInt(h.slice(k, k + 2), 16));
+}
+
+function colorDist(a, b) {
+  const x = hexToRgb(a), y = hexToRgb(b);
+  return Math.hypot(x[0] - y[0], x[1] - y[1], x[2] - y[2]);
+}
+
+// Donne à chaque zone une couleur de la palette, en évitant que deux zones
+// voisines aient des couleurs proches.
+function assignSlots(n, reg, palette) {
+  const adj = Array.from({ length: n }, () => new Set());
+  for (let i = 0; i < n * n; i++) {
+    const r = Math.floor(i / n), c = i % n;
+    if (c < n - 1 && reg[i] !== reg[i + 1]) { adj[reg[i]].add(reg[i + 1]); adj[reg[i + 1]].add(reg[i]); }
+    if (r < n - 1 && reg[i] !== reg[i + n]) { adj[reg[i]].add(reg[i + n]); adj[reg[i + n]].add(reg[i]); }
+  }
+  const order = [...Array(n).keys()].sort((a, b) => adj[b].size - adj[a].size);
+  const slot = new Array(n).fill(-1);
+  const used = new Set();
+  for (const r of order) {
+    let best = -1, bestScore = -1;
+    for (let s = 0; s < palette.length; s++) {
+      if (used.has(s)) continue;
+      let score = 1e9;
+      for (const nb of adj[r]) {
+        if (slot[nb] !== -1) score = Math.min(score, colorDist(palette[s], palette[slot[nb]]));
+      }
+      if (score > bestScore) { bestScore = score; best = s; }
+    }
+    slot[r] = best;
+    used.add(best);
+  }
+  return slot;
+}
+
+function buildColorEditor() {
+  const box = document.getElementById('color-grid');
+  if (!box) return;
+  box.innerHTML = '';
+  const palette = activePalette();
+  for (let r = 0; r < regionSlot.length; r++) {
+    const input = document.createElement('input');
+    input.type = 'color';
+    input.value = palette[regionSlot[r]];
+    input.title = 'Zone ' + (r + 1);
+    input.addEventListener('input', () => {
+      if (!settings.custom) settings.custom = activePalette().slice();
+      settings.custom[regionSlot[r]] = input.value;
+      saveSettings();
+      render();
+    });
+    box.appendChild(input);
+  }
+}
+
+function refreshColors() {
+  if (regions.length) regionSlot = assignSlots(N, regions, activePalette());
+  buildColorEditor();
+  if (regions.length) render();
+}
+
 // ===== Vérification =====
 function findConflicts() {
   const bad = new Set();
@@ -277,7 +358,7 @@ function render() {
   for (let i = 0; i < N * N; i++) {
     const cell = document.createElement('div');
     cell.className = 'cell';
-    cell.style.background = COLORS[regions[i]];
+    cell.style.background = activePalette()[regionSlot[regions[i]]];
     const r = Math.floor(i / N), c = i % N;
     if (bad.has(i)) cell.classList.add('conflict');
     if (marks[i] === 2) {
@@ -302,24 +383,36 @@ function render() {
 }
 
 // ===== Actions =====
+let lastBlankToX = null; // case qui vient de passer de vide à ✖ (par un clic)
+
 function saveState() {
   history.push(marks.slice());
   if (history.length > 500) history.shift();
+  lastBlankToX = null; // toute autre action remet ça à zéro
 }
 
 function undo() {
   if (history.length === 0) return;
   marks = history.pop();
+  lastBlankToX = null;
   render();
 }
 
 function clickCell(i) {
   if (won) return;
+  if (marks[i] === 1 && lastBlankToX === i) {
+    // 2e clic de suite sur la même case : on ne garde pas le ✖ intermédiaire,
+    // donc « Reculer » ramène directement la case vide
+    marks[i] = 2;
+    lastBlankToX = null;
+    render();
+    return;
+  }
   saveState();
   const showsX = marks[i] === 1 || (marks[i] === 0 && autoBlocked().has(i));
   if (marks[i] === 2) marks[i] = 0;      // chat -> vide
   else if (showsX) marks[i] = 2;         // ✖ -> chat
-  else marks[i] = 1;                     // vide -> ✖
+  else { marks[i] = 1; lastBlankToX = i; } // vide -> ✖
   render();
 }
 
@@ -338,8 +431,11 @@ function newGame() {
     const { cols, reg } = generate(N);
     solutionCols = cols;
     regions = reg;
+    regionSlot = assignSlots(N, regions, activePalette());
+    buildColorEditor();
     marks = new Array(N * N).fill(0);
     history = [];
+    lastBlankToX = null;
     board.style.display = '';
     loading.hidden = true;
     generating = false;
@@ -397,7 +493,7 @@ boardEl.addEventListener('pointercancel', () => { pressed = null; dragging = fal
 
 document.getElementById('undo').addEventListener('click', undo);
 // ===== Paramètres =====
-const settings = { counter: true, vanish: false };
+const settings = { counter: true, vanish: false, palette: 'douce', custom: null };
 
 function loadSettings() {
   try {
@@ -415,6 +511,7 @@ function applySettings() {
   document.body.classList.toggle('vanish', settings.vanish);
   document.getElementById('opt-counter').checked = settings.counter;
   document.getElementById('opt-vanish').checked = settings.vanish;
+  document.getElementById('opt-palette').value = settings.palette;
 }
 
 const panel = document.getElementById('settings-panel');
@@ -428,6 +525,21 @@ document.getElementById('opt-counter').addEventListener('change', (e) => {
 });
 document.getElementById('opt-vanish').addEventListener('change', (e) => {
   settings.vanish = e.target.checked; saveSettings(); applySettings();
+});
+document.getElementById('opt-palette').addEventListener('change', (e) => {
+  settings.palette = e.target.value;
+  settings.custom = null;
+  saveSettings();
+  refreshColors();
+});
+document.getElementById('color-edit-btn').addEventListener('click', () => {
+  const editor = document.getElementById('color-editor');
+  editor.hidden = !editor.hidden;
+});
+document.getElementById('color-reset').addEventListener('click', () => {
+  settings.custom = null;
+  saveSettings();
+  refreshColors();
 });
 
 loadSettings();
