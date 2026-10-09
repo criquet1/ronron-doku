@@ -373,29 +373,44 @@ function render() {
   board.style.gap = N > 10 ? '3px' : '6px';
   board.style.setProperty('--fs', N > 10 ? 'clamp(11px, 3vw, 22px)' : 'clamp(18px, 6vw, 34px)');
   board.style.maxWidth = N > 10 ? '700px' : '560px';
-  const frag = document.createDocumentFragment();
   const { bad, count } = findConflicts();
   const blocked = autoBlocked();
+  const pal = activePalette();
+
+  // Les cases ne sont créées qu'une fois par taille de grille, puis simplement mises à jour
+  // (sinon le téléphone perd le doigt posé sur la case et peut zoomer).
+  if (board.children.length !== N * N) {
+    const frag = document.createDocumentFragment();
+    for (let i = 0; i < N * N; i++) {
+      const cell = document.createElement('div');
+      cell.dataset.i = i;
+      frag.appendChild(cell);
+    }
+    board.replaceChildren(frag);
+  }
 
   for (let i = 0; i < N * N; i++) {
-    const cell = document.createElement('div');
-    cell.className = 'cell';
-    cell.style.background = activePalette()[regionSlot[regions[i]]];
-    const r = Math.floor(i / N), c = i % N;
-    if (bad.has(i)) cell.classList.add('conflict');
-    if (marks[i] === 2) {
-      const img = document.createElement('img');
-      img.src = CAT_IMAGE;
-      img.alt = 'chat';
-      img.className = 'cat-img';
-      img.draggable = false;
-      cell.appendChild(img);
+    const cell = board.children[i];
+    cell.style.background = pal[regionSlot[regions[i]]];
+    let kind = 'none';
+    if (marks[i] === 2) kind = 'cat';
+    else if (marks[i] === 1 || blocked.has(i)) kind = 'x';
+    cell.className = 'cell' + (bad.has(i) ? ' conflict' : '') + (kind === 'x' ? ' x' : '');
+    if (cell._kind !== kind) {
+      cell._kind = kind;
+      cell.textContent = '';
+      if (kind === 'cat') {
+        const img = document.createElement('img');
+        img.src = CAT_IMAGE;
+        img.alt = 'chat';
+        img.className = 'cat-img';
+        img.draggable = false;
+        cell.appendChild(img);
+      } else if (kind === 'x') {
+        cell.textContent = MARK;
+      }
     }
-    else if (marks[i] === 1 || blocked.has(i)) { cell.textContent = MARK; cell.classList.add('x'); }
-    cell.dataset.i = i;
-    frag.appendChild(cell);
   }
-  board.replaceChildren(frag);
 
   won = (count === N && bad.size === 0);
   const msg = document.getElementById('message');
