@@ -31,6 +31,7 @@
         </select>
         <button id="new-game">Nouvelle partie</button>
         <button id="undo">↩ Reculer</button>
+        <button id="hint-btn">💡 Indice</button>
         <button id="reset">Recommencer</button>
         <button id="rules-btn">📖 Règles du jeu</button>
         <button id="settings-btn">⚙️ Paramètres</button>
@@ -42,7 +43,7 @@
         Deux chats ne doivent jamais se toucher, même en diagonale.</p>
         <p>Clique une case : ✖ (exclue), puis le chat, puis vide.</p>
         <p>Les ✖ se placent tout seuls autour de chaque chat.</p>
-        <p>Tu peux aussi glisser sur plusieurs cases pour y poser des ✖.</p>
+        <p>À la souris, tu peux aussi glisser sur plusieurs cases pour y poser des ✖.</p>
         <button id="rules-close">Fermer</button>
       </div>
 
@@ -93,6 +94,14 @@
     </main>
   </div>
 
+    <div id="hint-box" hidden>
+    <p id="hint-text"></p>
+    <div class="hint-actions">
+      <button id="hint-apply">Appliquer</button>
+      <button id="hint-close">Fermer</button>
+    </div>
+  </div>
   <script src="script.js"></script>
+  <script src="hints.js"></script>
 </body>
 </html>

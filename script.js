@@ -366,6 +366,16 @@ function autoBlocked() {
   return blocked;
 }
 
+// ===== Indice en cours (voir hints.js) =====
+let hint = null;
+function clearHint() {
+  if (!hint) return;
+  hint = null;
+  document.body.classList.remove('hinting');
+  const box = document.getElementById('hint-box');
+  if (box) box.hidden = true;
+}
+
 // ===== Affichage =====
 function render() {
   const board = document.getElementById('board');
@@ -396,6 +406,12 @@ function render() {
     if (marks[i] === 2) kind = 'cat';
     else if (marks[i] === 1 || blocked.has(i)) kind = 'x';
     cell.className = 'cell' + (bad.has(i) ? ' conflict' : '') + (kind === 'x' ? ' x' : '');
+    if (hint) {
+      if (hint.zoneCells.has(i)) cell.classList.add('hint-zone');
+      if (hint.lineCells.has(i)) cell.classList.add('hint-line');
+      if (hint.elim.has(i)) cell.classList.add('hint-elim');
+      if (hint.target === i) cell.classList.add('hint-target');
+    }
     if (cell._kind !== kind) {
       cell._kind = kind;
       cell.textContent = '';
@@ -426,12 +442,14 @@ function render() {
 let lastBlankToX = null; // case qui vient de passer de vide à ✖ (par un clic)
 
 function saveState() {
+  clearHint();
   history.push(marks.slice());
   if (history.length > 500) history.shift();
   lastBlankToX = null; // toute autre action remet ça à zéro
 }
 
 function undo() {
+  clearHint();
   if (history.length === 0) return;
   marks = history.pop();
   lastBlankToX = null;
@@ -439,6 +457,7 @@ function undo() {
 }
 
 function clickCell(i) {
+  clearHint();
   if (won) return;
   if (marks[i] === 1 && lastBlankToX === i) {
     // 2e clic de suite sur la même case : on ne garde pas le ✖ intermédiaire,
@@ -469,6 +488,13 @@ function saveGame() {
   } catch (e) { /* pas grave si le navigateur refuse */ }
 }
 
+// Retrouve la solution (unique) d'une grille déjà générée
+function findSolution(n, reg) {
+  const sols = [];
+  countSolutions(n, reg, 1, sols);
+  return sols.length ? sols[0] : [];
+}
+
 function restoreGame() {
   try {
     const d = JSON.parse(localStorage.getItem(GAME_KEY));
@@ -482,6 +508,7 @@ function restoreGame() {
     const savedCode = parseCode(d.gameCode);
     gameCode = savedCode && savedCode.size === d.N ? d.gameCode : '';
     regions = d.regions;
+    solutionCols = findSolution(N, regions);
     marks = d.marks;
     history = Array.isArray(d.history) ? d.history.filter(h => okArray(h, total)) : [];
     lastBlankToX = null;
@@ -535,6 +562,7 @@ function newGame(codeText) {
   const size = parsed ? parsed.size : parseInt(sizeSelect.value);
   const seed = parsed ? parsed.seed : Math.floor(Math.random() * 900000) + 100000;
   if (parsed) sizeSelect.value = String(size);
+  clearHint();
   generating = true;
   const loading = document.getElementById('loading');
   const board = document.getElementById('board');
