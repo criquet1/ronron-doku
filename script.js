@@ -596,6 +596,17 @@ boardEl.addEventListener('pointerup', () => {
 });
 boardEl.addEventListener('pointercancel', () => { pressed = null; dragging = false; });
 
+// iPhone : un 2e toucher rapide sur la grille déclenche un zoom. On le bloque
+// (le jeu utilise pointerup, qui est déjà passé à ce moment-là).
+let lastTouchEnd = 0;
+boardEl.addEventListener('touchend', (e) => {
+  const now = Date.now();
+  if (now - lastTouchEnd < 500) e.preventDefault();
+  lastTouchEnd = now;
+}, { passive: false });
+// Bloque aussi le pincement-zoom commencé par Safari sur la grille
+boardEl.addEventListener('gesturestart', (e) => e.preventDefault());
+
 document.getElementById('undo').addEventListener('click', undo);
 // ===== Paramètres =====
 const settings = { counter: true, vanish: false, palette: 'douce', custom: null };
