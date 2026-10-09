@@ -101,3 +101,13 @@ body.vanish .cell.x:hover { filter: none; background: rgba(0,0,0,0.04) !importan
   animation: spin 0.9s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+.cat-img {
+  width: 88%;
+  height: 88%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+.credit { font-size: 13px; color: #7a6a5a; margin-top: 16px; }
+.credit a { color: #b5651d; }

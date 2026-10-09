@@ -3,13 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Meowdoku</title>
+  <title>Ronron-doku</title>
+  <meta name="description" content="Ronron-doku : un jeu de logique gratuit. Place un chat dans chaque rangée, chaque colonne et chaque zone de couleur, sans que deux chats se touchent. Grilles de 5 × 5 à 15 × 15, croix posées automatiquement, glisser pour poser des croix, bouton Reculer.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Ronron-doku">
+  <meta property="og:description" content="Un jeu de logique avec des chats : un chat par rangée, par colonne et par zone de couleur, sans que deux chats se touchent. Grilles de 5 × 5 à 15 × 15.">
+  <meta property="og:image" content="https://ronron-doku.onrender.com/cat.png">
+  <meta property="og:url" content="https://ronron-doku.onrender.com/">
+  <link rel="icon" href="cat.png" type="image/png">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="layout">
     <aside id="side">
-      <h1>🐾 Meowdoku 🐾</h1>
+      <h1>🐾 Ronron-doku 🐾</h1>
 
       <div class="controls">
         <select id="size">
@@ -33,7 +40,7 @@
         <h2>Règles du jeu</h2>
         <p>Place <b>un chat</b> dans chaque rangée, chaque colonne et chaque zone de couleur.
         Deux chats ne doivent jamais se toucher, même en diagonale.</p>
-        <p>Clique une case : ✖ (exclue), puis 🐱 (chat), puis vide.</p>
+        <p>Clique une case : ✖ (exclue), puis le chat, puis vide.</p>
         <p>Les ✖ se placent tout seuls autour de chaque chat.</p>
         <p>Tu peux aussi glisser sur plusieurs cases pour y poser des ✖.</p>
         <button id="rules-close">Fermer</button>
@@ -50,6 +57,7 @@
         <span id="counter"></span>
         <p id="message"></p>
       </div>
+      <p class="credit">Image du chat : <a href="https://www.magnific.com/fr/vecteurs-libre/caricature-chat-mignon-noir_48121656.htm" target="_blank" rel="noopener">brgfx sur Magnific</a></p>
     </aside>
 
     <main id="board-area">

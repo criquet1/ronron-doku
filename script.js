@@ -2,7 +2,7 @@
 const COLORS = ['#e2b848', '#e6a5c0', '#c2688b', '#9378d0', '#7fb6d8',
                 '#8fcf9a', '#e89b6b', '#6fc1b8', '#b5b5b5', '#d96b5f',
                 '#4f8fc0', '#a9c75a', '#7a5c9e', '#c9a27e', '#5aa58b'];
-const CAT = '🐱';
+const CAT_IMAGE = 'cat.png';
 const MARK = '✖';
 
 // ===== État du jeu =====
@@ -280,7 +280,14 @@ function render() {
     cell.style.background = COLORS[regions[i]];
     const r = Math.floor(i / N), c = i % N;
     if (bad.has(i)) cell.classList.add('conflict');
-    if (marks[i] === 2) cell.textContent = CAT;
+    if (marks[i] === 2) {
+      const img = document.createElement('img');
+      img.src = CAT_IMAGE;
+      img.alt = 'chat';
+      img.className = 'cat-img';
+      img.draggable = false;
+      cell.appendChild(img);
+    }
     else if (marks[i] === 1 || blocked.has(i)) { cell.textContent = MARK; cell.classList.add('x'); }
     cell.dataset.i = i;
     board.appendChild(cell);
@@ -290,7 +297,7 @@ function render() {
   const msg = document.getElementById('message');
   msg.textContent = won ? '😻 Réussi ! Tous les chats sont bien placés. Miaou !' : '';
   msg.classList.toggle('win', won);
-  document.getElementById('counter').textContent = `🐱 ${count} / ${N}` +
+  document.getElementById('counter').textContent = `Chats : ${count} / ${N}` +
     (bad.size > 0 ? '   ⚠️ des chats se gênent' : '');
 }
 
