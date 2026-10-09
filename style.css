@@ -140,3 +140,6 @@ body.vanish .cell.x:hover { filter: none; background: rgba(0,0,0,0.04) !importan
 
 /* Évite que la page saute quand la grille est redessinée */
 html, body, #board { overflow-anchor: none; }
+
+/* Pas de zoom au double-tap sur la grille (le défilement et le pincement restent possibles) */
+#board, .cell { touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
