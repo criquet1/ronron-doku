@@ -196,6 +196,7 @@ function render() {
   const msg = document.getElementById('message');
   msg.textContent = won ? '😻 Réussi ! Tous les chats sont bien placés. Miaou !' : '';
   msg.classList.toggle('win', won);
+  if (!won) msg.classList.remove('dismissed');
   document.getElementById('counter').textContent = `Chats : ${count} / ${N}` +
     (bad.size > 0 ? '  ⚠️ ça se touche' : '');
   document.getElementById('game-code').textContent = gameCode ? 'Code de la partie : ' + gameCode : '';
@@ -527,6 +528,7 @@ boardEl.addEventListener('touchend', (e) => {
 // Bloque aussi le pincement-zoom commencé par Safari sur la grille
 boardEl.addEventListener('gesturestart', (e) => e.preventDefault());
 
+document.getElementById('message').addEventListener('click', (e) => e.currentTarget.classList.add('dismissed'));
 document.getElementById('undo').addEventListener('click', undo);
 // ===== Paramètres =====
 const settings = { counter: true, vanish: false, palette: 'douce', custom: null };
