@@ -44,8 +44,8 @@ button, select {
 .cell.x::before, .cell.x::after {
   content: '';
   position: absolute;
-  left: 18%; right: 18%; top: 50%;
-  height: max(3px, 7%);
+  left: 6%; right: 6%; top: 50%;
+  height: max(6px, 13%);
   background: rgba(255, 255, 255, 0.95);
   border-radius: 4px;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.35);
