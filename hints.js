@@ -161,13 +161,9 @@ function computeHint() {
     for (const i of st.elim) cand[i] = false; // déjà connu du joueur : on continue
   }
 
-  // Aucune astuce simple : on montre une case de la solution
-  for (let r = 0; r < n; r++) {
-    const i = r * n + solutionCols[r];
-    if (marks[i] !== 2) return mk({ kind: 'place', target: i,
-      text: "Je ne vois pas d'astuce simple ici. Voici une case où va un chat (je la connais, mais ça demande un raisonnement plus long)." });
-  }
-  return mk({ kind: 'done', text: 'Tous les chats sont déjà placés. Bravo ! 😻' });
+  // Aucune astuce simple : on propose de placer un chat (au hasard, choisi quand la joueuse accepte)
+  return mk({ kind: 'place', random: true,
+    text: "Je ne vois pas d'astuce simple ici. Si tu veux, je peux placer un chat pour toi, à un endroit au hasard." });
 }
 
 // ----- Affichage de l'indice -----
@@ -188,9 +184,11 @@ function showHint() {
   }
   const labels = { place: 'Placer le chat', elim: 'Placer les ✖', remove: 'Retirer ce chat' };
   hintApply.hidden = !labels[hint.kind];
-  hintApply.textContent = labels[hint.kind] || '';
+  hintApply.textContent = hint.random ? 'Placer un chat' : (labels[hint.kind] || '');
   hintBox.hidden = false;
   document.body.classList.add('hinting');
+  const nothingToShow = hint.target === null && !hint.zoneCells.size && !hint.lineCells.size && !hint.elim.size;
+  document.body.classList.toggle('hint-plain', nothingToShow);
   render();
   const first = hint.target !== null ? hint.target : [...hint.elim][0];
   const el = first !== undefined ? document.getElementById('board').children[first] : null;
@@ -203,7 +201,15 @@ function applyHint() {
   if (!hint) return;
   const h = hint;
   saveState(); // efface aussi l'indice
-  if (h.kind === 'place') marks[h.target] = 2;
+  if (h.kind === 'place' && h.random) {
+    // un chat au hasard parmi les rangées qui n'en ont pas encore (toujours à la bonne place)
+    const free = [];
+    for (let r = 0; r < N; r++) {
+      const i = r * N + solutionCols[r];
+      if (marks[i] !== 2) free.push(i);
+    }
+    if (free.length) marks[free[Math.floor(Math.random() * free.length)]] = 2;
+  } else if (h.kind === 'place') marks[h.target] = 2;
   else if (h.kind === 'remove') marks[h.target] = 0;
   else if (h.kind === 'elim') h.elim.forEach(i => { if (marks[i] === 0) marks[i] = 1; });
   render();

@@ -135,7 +135,7 @@ let hint = null;
 function clearHint() {
   if (!hint) return;
   hint = null;
-  document.body.classList.remove('hinting');
+  document.body.classList.remove('hinting', 'hint-plain');
   const box = document.getElementById('hint-box');
   if (box) box.hidden = true;
 }
