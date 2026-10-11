@@ -528,7 +528,8 @@ boardEl.addEventListener('touchend', (e) => {
 // Bloque aussi le pincement-zoom commencé par Safari sur la grille
 boardEl.addEventListener('gesturestart', (e) => e.preventDefault());
 
-document.getElementById('message').addEventListener('click', (e) => e.currentTarget.classList.add('dismissed'));
+// Toucher le message de réussite lance une nouvelle partie
+document.getElementById('message').addEventListener('click', () => newGame());
 document.getElementById('undo').addEventListener('click', undo);
 // ===== Paramètres =====
 const settings = { counter: true, vanish: false, palette: 'douce', custom: null };
