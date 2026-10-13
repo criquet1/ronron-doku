@@ -19,9 +19,10 @@
   <div id="layout">
     <aside id="side">
       <h1>🐾 Ronron-doku 🐾</h1>
-      <p class="tagline">Jeu de logique avec des chats · grilles de 5 × 5 jusqu'à 15 × 15</p>
+      <p class="tagline" data-i18n="tagline">Jeu de logique avec des chats · grilles de 5 × 5 jusqu'à 15 × 15</p>
 
       <div class="controls">
+        <select id="lang" aria-label="Langue / Language"><option value="fr">Français</option><option value="en">English</option><option value="ar">العربية</option></select>
         <select id="size">
           <option value="5">5 × 5</option>
           <option value="6">6 × 6</option>
@@ -32,43 +33,43 @@
           <option value="12">12 × 12</option>
           <option value="15">15 × 15</option>
         </select>
-        <button id="new-game">Nouvelle partie</button>
-        <button id="undo">↩ Reculer</button>
-        <button id="hint-btn">💡 Indice</button>
-        <button id="reset">Recommencer</button>
-        <button id="rules-btn">📖 Règles du jeu</button>
-        <button id="settings-btn">⚙️ Paramètres</button>
+        <button id="new-game" data-i18n="new_game">Nouvelle partie</button>
+        <button id="undo-top" data-i18n="undo_top">↩ Reculer</button>
+        <button id="hint-top" data-i18n="hint_top">💡 Indice</button>
+        <button id="reset" data-i18n="reset">Recommencer</button>
+        <button id="rules-btn" data-i18n="rules_btn">📖 Règles du jeu</button>
+        <button id="settings-btn" data-i18n="settings_btn">⚙️ Paramètres</button>
       </div>
 
       <div id="rules-panel" class="panel" hidden>
-        <h2>Règles du jeu</h2>
-        <p>Place <b>un chat</b> dans chaque rangée, chaque colonne et chaque zone de couleur.
+        <h2 data-i18n="rules_h">Règles du jeu</h2>
+        <p data-i18n="rules_p1">Place <b>un chat</b> dans chaque rangée, chaque colonne et chaque zone de couleur.
         Deux chats ne doivent jamais se toucher, même en diagonale.</p>
-        <p>Clique une case : ✖ (exclue), puis le chat, puis vide.</p>
-        <p>Les ✖ se placent tout seuls autour de chaque chat.</p>
-        <p>À la souris, tu peux aussi glisser sur plusieurs cases pour y poser des ✖.</p>
-        <button id="rules-close">Fermer</button>
+        <p data-i18n="rules_p2">Clique une case : ✖ (exclue), puis le chat, puis vide.</p>
+        <p data-i18n="rules_p3">Les ✖ se placent tout seuls autour de chaque chat.</p>
+        <p data-i18n="rules_p4">À la souris, tu peux aussi glisser sur plusieurs cases pour y poser des ✖.</p>
+        <button id="rules-close" data-i18n="close">Fermer</button>
       </div>
 
       <div id="settings-panel" class="panel" hidden>
-        <h2>Paramètres</h2>
-        <label><input type="checkbox" id="opt-counter" checked> Afficher le compteur de chats</label>
-        <label><input type="checkbox" id="opt-vanish"> Effacer les cases exclues (au lieu de ✖)</label>
-        <label>Palette de couleurs :
+        <h2 data-i18n="settings_h">Paramètres</h2>
+        <label><input type="checkbox" id="opt-counter" checked> <span data-i18n="opt_counter">Afficher le compteur de chats</span></label>
+        <label><input type="checkbox" id="opt-vanish"> <span data-i18n="opt_vanish">Effacer les cases exclues (au lieu de ✖)</span></label>
+        <label><span data-i18n="opt_palette">Palette de couleurs :</span>
           <select id="opt-palette">
-            <option value="douce">Douce</option>
-            <option value="vive">Vive</option>
-            <option value="mixte">Mixte (vive et pastel)</option>
-            <option value="pastel">Pastel</option>
+            <option value="douce" data-i18n="pal_douce">Douce</option>
+            <option value="vive" data-i18n="pal_vive">Vive</option>
+            <option value="mixte" data-i18n="pal_mixte">Mixte (vive et pastel)</option>
+            <option value="pastel" data-i18n="pal_pastel">Pastel</option>
           </select>
         </label>
-        <button id="color-edit-btn">🎨 Choisir les couleurs une par une</button>
+        <button id="color-edit-btn" data-i18n="color_edit">🎨 Choisir les couleurs une par une</button>
         <div id="color-editor" hidden>
-          <p>Clique sur une couleur pour la changer. Une couleur par zone de la grille actuelle.</p>
+          <p data-i18n="color_help">Clique sur une couleur pour la changer. Une couleur par zone de la grille actuelle.</p>
           <div id="color-grid"></div>
-          <button id="color-reset">Rétablir la palette</button>
+          <button id="color-reset" data-i18n="color_reset">Rétablir la palette</button>
         </div>
-        <button id="settings-close">Fermer</button>
+        <button id="settings-close" data-i18n="close">Fermer</button>
       </div>
 
       <div id="status">
@@ -77,48 +78,51 @@
 
       <div id="code-box">
         <div id="game-code"></div>
-        <button id="copy-link">📋 Copier le lien</button>
+        <button id="copy-link" data-i18n="copy_link">📋 Copier le lien</button>
         <div class="code-row">
-          <input id="code-input" type="text" placeholder="Code, ex. 7-48213" maxlength="80" autocomplete="off">
-          <button id="code-go">Jouer ce code</button>
+          <input id="code-input" type="text" placeholder="Code, ex. 7-48213" data-i18n-ph="code_ph" maxlength="80" autocomplete="off">
+          <button id="code-go" data-i18n="code_go">Jouer ce code</button>
         </div>
         <small id="code-msg"></small>
       </div>
-      <p class="credit">Image du chat, gracieuseté de : <a href="https://www.magnific.com/fr/vecteurs-libre/caricature-chat-mignon-noir_48121656.htm" target="_blank" rel="noopener">brgfx sur Magnific</a></p>
+      <p class="credit" data-i18n="credit">Image du chat, gracieuseté de : <a href="https://www.magnific.com/fr/vecteurs-libre/caricature-chat-mignon-noir_48121656.htm" target="_blank" rel="noopener">brgfx sur Magnific</a></p>
     </aside>
 
     <main id="board-area">
       <div id="loading" hidden>
         <div class="spinner"></div>
-        <p>Création de la grille…<br>Les grandes grilles prennent quelques secondes.</p>
+        <p data-i18n="loading">Création de la grille…<br>Les grandes grilles prennent quelques secondes.</p>
       </div>
+      <div id="undo-wrap"><button id="undo" title="Reculer d'un coup" data-i18n-title="undo_title">↩<span data-i18n="undo_word">Reculer</span></button>
+        <button id="hint-btn" title="Demander un indice" data-i18n-title="hint_title">💡<span data-i18n="hint_word">Indice</span></button></div>
       <div id="board"></div>
       <p id="message"></p>
     </main>
   </div>
 
   <section id="about">
-    <h2>À propos de Ronron-doku</h2>
-    <p>Ronron-doku est un jeu de logique gratuit qui se joue directement dans le navigateur, sur ordinateur comme sur téléphone, sans inscription et sans publicité.</p>
-    <p><b>Le but :</b> placer un chat dans chaque rangée, chaque colonne et chaque zone de couleur, sans que deux chats se touchent, même en diagonale. Chaque grille a une seule solution.</p>
+    <h2 data-i18n="about_h">À propos de Ronron-doku</h2>
+    <p data-i18n="about_p1">Ronron-doku est un jeu de logique gratuit qui se joue directement dans le navigateur, sur ordinateur comme sur téléphone, sans inscription et sans publicité.</p>
+    <p data-i18n="about_p2"><b>Le but :</b> placer un chat dans chaque rangée, chaque colonne et chaque zone de couleur, sans que deux chats se touchent, même en diagonale. Chaque grille a une seule solution.</p>
     <ul>
-      <li>Des grilles de 5 × 5 jusqu'à 15 × 15.</li>
-      <li>Les ✖ se placent automatiquement autour des chats, et on peut aussi faire disparaître les cases exclues.</li>
-      <li>Un bouton « Indice » qui explique le raisonnement pas à pas.</li>
-      <li>Un bouton « Reculer » pour annuler autant de coups qu'on veut.</li>
-      <li>Un code de partie : avec le même code, on retrouve la même grille sur n'importe quel appareil.</li>
-      <li>Plusieurs palettes de couleurs, avec choix des couleurs de chaque zone.</li>
-      <li>Ta partie en cours est gardée automatiquement.</li>
+      <li data-i18n="about_li1">Des grilles de 5 × 5 jusqu'à 15 × 15.</li>
+      <li data-i18n="about_li2">Les ✖ se placent automatiquement autour des chats, et on peut aussi faire disparaître les cases exclues.</li>
+      <li data-i18n="about_li3">Un bouton « Indice » qui explique le raisonnement pas à pas.</li>
+      <li data-i18n="about_li4">Un bouton « Reculer » pour annuler autant de coups qu'on veut.</li>
+      <li data-i18n="about_li5">Un code de partie : avec le même code, on retrouve la même grille sur n'importe quel appareil.</li>
+      <li data-i18n="about_li6">Plusieurs palettes de couleurs, avec choix des couleurs de chaque zone.</li>
+      <li data-i18n="about_li7">Ta partie en cours est gardée automatiquement.</li>
     </ul>
   </section>
 
   <div id="hint-box" hidden>
     <p id="hint-text"></p>
     <div class="hint-actions">
-      <button id="hint-apply">Appliquer</button>
-      <button id="hint-close">Fermer</button>
+      <button id="hint-apply" data-i18n="apply">Appliquer</button>
+      <button id="hint-close" data-i18n="close">Fermer</button>
     </div>
   </div>
+  <script src="i18n.js"></script>
   <script src="gen.js"></script>
   <script src="script.js"></script>
   <script src="hints.js"></script>

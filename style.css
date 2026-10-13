@@ -65,7 +65,7 @@ body.vanish .cell.x::before, body.vanish .cell.x::after { display: none; }
   background: #4caf50; border: 4px solid white; border-radius: 18px; padding: 18px 20px;
   box-shadow: 0 8px 30px rgba(0,0,0,0.35); animation: winpop 0.45s;
 }
-#message.win::after { content: 'Touche pour une nouvelle partie'; display: block; margin-top: 8px; font-size: 13px; font-weight: normal; opacity: 0.9; }
+#message.win::after { content: attr(data-tip); display: block; margin-top: 8px; font-size: 13px; font-weight: normal; opacity: 0.9; }
 #message.win.dismissed { display: none; }
 @keyframes winpop { from { transform: translate(-50%, -50%) scale(0.7); opacity: 0; } to { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
 @keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -168,7 +168,7 @@ html, body, #board { overflow-anchor: none; }
 #board, .cell { touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
 
 /* ===== Indices ===== */
-#hint-btn { background: #fff3c4; }
+#hint-btn, #hint-top { background: #fff3c4; }
 #hint-box {
   position: fixed; left: 12px; right: 12px; bottom: 12px; max-width: 560px; margin: 0 auto;
   z-index: 30; background: white; border-radius: 16px; padding: 12px 16px;
@@ -179,12 +179,12 @@ html, body, #board { overflow-anchor: none; }
 .hint-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 body.hinting { padding-bottom: 190px; }
 body.hinting:not(.hint-plain) #board .cell:not(.hint-zone):not(.hint-line):not(.hint-elim):not(.hint-target) { opacity: 0.35; }
-.cell.hint-line { background-image: linear-gradient(rgba(255, 214, 0, 0.65), rgba(255, 214, 0, 0.65)) !important; }
-.cell.hint-zone { box-shadow: inset 0 0 0 4px #2b2b2b; }
-.cell.hint-elim { outline: 3px dashed #d32f2f; outline-offset: -3px; }
+.hint-frame { position: absolute; border: 4px solid #7b3fc4; border-radius: 16px; background: rgba(123, 63, 196, 0.08); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18); pointer-events: none; z-index: 3; }
+.cell.hint-zone { animation: hintpulse 0.9s ease-in-out infinite alternate; }
+.cell.hint-elim { filter: saturate(0.8); }
 .cell.hint-elim:not(.x)::after { content: '✖'; color: rgba(211, 47, 47, 0.8); font-size: var(--fs, 24px); }
 .cell.hint-target { outline: 4px solid #d32f2f; outline-offset: -4px; animation: hintpulse 0.9s ease-in-out infinite alternate; }
-@keyframes hintpulse { from { filter: brightness(1); } to { filter: brightness(1.25); } }
+@keyframes hintpulse { from { filter: brightness(1); } to { filter: brightness(1.07); } }
 
 /* ===== Présentation du jeu (sous la grille) ===== */
 #about { max-width: 760px; margin: 28px auto 24px; padding: 16px 20px; background: white; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); color: #5d3a1a; line-height: 1.5; }
@@ -195,3 +195,46 @@ body.hinting:not(.hint-plain) #board .cell:not(.hint-zone):not(.hint-line):not(.
 
 .tagline { margin: 0 0 10px; font-size: 14px; color: #7a6a5a; }
 @media (max-width: 800px) { .tagline { margin: 0 0 6px; font-size: 12px; } }
+
+/* Bouton Reculer flottant, à gauche de la grille, qui suit le défilement */
+#undo-wrap { width: 64px; flex: none; align-self: flex-start; position: sticky; top: 45vh; z-index: 5; }
+#undo, #hint-btn { position: absolute; right: 8px; min-width: 52px; top: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px 8px; font-size: 22px; line-height: 1; margin: 0; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25); }
+#undo { transform: translateY(-110%); }
+#hint-btn { transform: translateY(10%); }
+#undo span, #hint-btn span { font-size: 12px; }
+#undo-top, #hint-top { display: none; }
+@media (max-width: 800px) {
+  #undo-wrap { display: none; }
+  #undo-top, #hint-top { display: inline-block; }
+}
+
+/* Arabe (de droite à gauche) : le texte est inversé, mais la grille et la mise en page restent comme avant */
+html[dir="rtl"] #layout, html[dir="rtl"] #board-area { direction: ltr; }
+html[dir="rtl"] #side { direction: rtl; text-align: right; }
+html[dir="rtl"] #side h1, html[dir="rtl"] .tagline { text-align: center; }
+html[dir="rtl"] #size, html[dir="rtl"] #code-input { direction: ltr; }
+html[dir="rtl"] #message { direction: rtl; }
+
+/* Arabe : l'écriture arabe paraît plus petite à taille égale, on agrandit un peu les textes */
+html[lang="ar"] body { font-family: Tahoma, "Segoe UI", Arial, sans-serif; }
+html[lang="ar"] button, html[lang="ar"] select, html[lang="ar"] input { font-size: 18px; font-family: inherit; }
+html[lang="ar"] #side button, html[lang="ar"] #side select { font-size: 18px; }
+html[lang="ar"] .tagline { font-size: 16px; }
+html[lang="ar"] #counter { font-size: 21px; }
+html[lang="ar"] #game-code, html[lang="ar"] #code-input { font-size: 18px; }
+html[lang="ar"] .credit { font-size: 15px; }
+html[lang="ar"] .panel, html[lang="ar"] #about, html[lang="ar"] #color-editor p { font-size: 18px; }
+html[lang="ar"] .panel h2, html[lang="ar"] #about h2 { font-size: 21px; }
+html[lang="ar"] #hint-text { font-size: 19px; }
+html[lang="ar"] #loading p { font-size: 20px; }
+html[lang="ar"] #message.win { font-size: 25px; }
+html[lang="ar"] #message.win::after { font-size: 16px; }
+html[lang="ar"] #undo span, html[lang="ar"] #hint-btn span { font-size: 14px; }
+html[lang="ar"] #undo, html[lang="ar"] #hint-btn { font-size: 22px; }
+@media (max-width: 800px) {
+  html[lang="ar"] #side button, html[lang="ar"] #side select { font-size: 16px; }
+  html[lang="ar"] #counter { font-size: 18px; }
+  html[lang="ar"] #message.win { font-size: 21px; }
+  html[lang="ar"] .tagline { font-size: 14px; }
+  html[lang="ar"] .panel, html[lang="ar"] #about { font-size: 16px; }
+}

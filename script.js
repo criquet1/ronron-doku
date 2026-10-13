@@ -132,6 +132,46 @@ function autoBlocked() {
 
 // ===== Indice en cours (voir hints.js) =====
 let hint = null;
+// Cadres violets autour des rangées / colonnes de l'indice (posés sur #board-area, pas dans la grille)
+function drawHintFrames() {
+  const area = document.getElementById('board-area');
+  const boardNode = document.getElementById('board');
+  area.querySelectorAll('.hint-frame').forEach((el) => el.remove());
+  if (!hint || !hint.lineCells || !hint.lineCells.size || boardNode.children.length !== N * N) return;
+  const frame = (a, b) => {
+    const f = document.createElement('div');
+    f.className = 'hint-frame';
+    const pad = 5;
+    f.style.left = (a.offsetLeft - pad) + 'px';
+    f.style.top = (a.offsetTop - pad) + 'px';
+    f.style.width = (b.offsetLeft + b.offsetWidth - a.offsetLeft + 2 * pad) + 'px';
+    f.style.height = (b.offsetTop + b.offsetHeight - a.offsetTop + 2 * pad) + 'px';
+    area.appendChild(f);
+  };
+  // Lignes voisines : un seul cadre pour tout le groupe
+  const rows = [], cols = [];
+  for (let k = 0; k < N; k++) {
+    let rowAll = true, colAll = true;
+    for (let j = 0; j < N; j++) {
+      if (!hint.lineCells.has(k * N + j)) rowAll = false;
+      if (!hint.lineCells.has(j * N + k)) colAll = false;
+    }
+    if (rowAll) rows.push(k);
+    if (colAll) cols.push(k);
+  }
+  const runs = (arr) => {
+    const out = [];
+    for (const v of arr) {
+      if (out.length && out[out.length - 1][1] === v - 1) out[out.length - 1][1] = v;
+      else out.push([v, v]);
+    }
+    return out;
+  };
+  for (const [r1, r2] of runs(rows)) frame(boardNode.children[r1 * N], boardNode.children[r2 * N + N - 1]);
+  for (const [c1, c2] of runs(cols)) frame(boardNode.children[c1], boardNode.children[(N - 1) * N + c2]);
+}
+window.addEventListener('resize', () => { if (hint) drawHintFrames(); });
+
 function clearHint() {
   if (!hint) return;
   hint = null;
@@ -182,7 +222,7 @@ function render() {
       if (kind === 'cat') {
         const img = document.createElement('img');
         img.src = CAT_IMAGE;
-        img.alt = 'chat';
+        img.alt = t('img_alt');
         img.className = 'cat-img';
         img.draggable = false;
         cell.appendChild(img);
@@ -192,14 +232,17 @@ function render() {
     }
   }
 
+  drawHintFrames();
+
   won = (count === N && bad.size === 0);
   const msg = document.getElementById('message');
-  msg.textContent = won ? '😻 Réussi ! Tous les chats sont bien placés. Miaou !' : '';
+  msg.textContent = won ? t('win') : '';
+  msg.dataset.tip = t('win_tip');
   msg.classList.toggle('win', won);
   if (!won) msg.classList.remove('dismissed');
-  document.getElementById('counter').textContent = `Chats : ${count} / ${N}` +
-    (bad.size > 0 ? '  ⚠️ ça se touche' : '');
-  document.getElementById('game-code').textContent = gameCode ? 'Code de la partie : ' + gameCode : '';
+  document.getElementById('counter').textContent = t('counter', count, N) +
+    (bad.size > 0 ? t('touching') : '');
+  document.getElementById('game-code').textContent = gameCode ? t('game_code') + '\u2066' + gameCode + '\u2069' : '';
   saveGame();
 }
 
@@ -531,6 +574,7 @@ boardEl.addEventListener('gesturestart', (e) => e.preventDefault());
 // Toucher le message de réussite lance une nouvelle partie
 document.getElementById('message').addEventListener('click', () => newGame());
 document.getElementById('undo').addEventListener('click', undo);
+document.getElementById('undo-top').addEventListener('click', undo);
 // ===== Paramètres =====
 const settings = { counter: true, vanish: false, palette: 'douce', custom: null };
 
@@ -593,17 +637,17 @@ document.getElementById('copy-link').addEventListener('click', async (e) => {
   const btn = e.currentTarget;
   try {
     await navigator.clipboard.writeText(shareLink());
-    btn.textContent = '✓ Lien copié';
-    setTimeout(() => { btn.textContent = '📋 Copier le lien'; }, 2000);
+    btn.textContent = t('link_copied');
+    setTimeout(() => { btn.textContent = t('copy_link'); }, 2000);
   } catch (err) {
     codeInput.value = shareLink(); // si la copie automatique est refusée, on l'affiche
     codeInput.select();
-    codeMsg.textContent = 'Copie automatique impossible : copie le lien ci-dessus.';
+    codeMsg.textContent = t('copy_failed');
   }
 });
 function playCode() {
   if (!parseCode(codeInput.value)) {
-    codeMsg.textContent = 'Code invalide. Exemple : 7-48213 (les tailles possibles : ' + SIZES.join(', ') + ')';
+    codeMsg.textContent = t('bad_code', SIZES.join(', '));
     return;
   }
   codeMsg.textContent = '';
@@ -611,6 +655,12 @@ function playCode() {
   codeInput.value = '';
 }
 document.getElementById('code-go').addEventListener('click', playCode);
+document.getElementById('lang').addEventListener('change', (e) => {
+  setLang(e.target.value);
+  clearHint();
+  codeMsg.textContent = '';
+  render();
+});
 codeInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') playCode(); });
 document.getElementById('reset').addEventListener('click', resetBoard);
 document.addEventListener('keydown', (e) => {

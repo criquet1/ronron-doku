@@ -3,6 +3,7 @@
 // astuce qui t'apprend quelque chose de nouveau, la montre et l'explique.
 // Les ✖ que tu as posés toi-même ne sont pas utilisés (ils pourraient être faux).
 
+const T = (...a) => t(...a); // t() est parfois masqué par une variable locale « t » (rangée / colonne)
 const HINT_MAX_K = 4; // taille maximale des groupes d'astuces (k zones ↔ k rangées)
 
 function subsetsOf(list, k) {
@@ -15,8 +16,8 @@ function subsetsOf(list, k) {
 }
 const popcount = (x) => { let c = 0; while (x) { c += x & 1; x >>= 1; } return c; };
 
-function lineWord(t, plural) {
-  return t === 'r' ? (plural ? 'rangées' : 'rangée') : (plural ? 'colonnes' : 'colonne');
+function lineWord(kind, plural) {
+  return t(kind === 'r' ? (plural ? 'h_rows' : 'h_row') : (plural ? 'h_cols' : 'h_col'));
 }
 
 // Retourne un indice : { kind, text, zoneCells, lineCells, elim, target }
@@ -33,10 +34,10 @@ function computeHint() {
   for (const i of cats) {
     if (solutionCols[rowOf(i)] !== colOf(i)) {
       return mk({ kind: 'remove', target: i,
-        text: "Ce chat est mal placé : il ne mène pas à la solution. Tu peux le retirer (ou utiliser « Reculer »)." });
+        text: T('h_remove') });
     }
   }
-  if (cats.length === n) return mk({ kind: 'done', text: 'Tous les chats sont déjà placés. Bravo ! 😻' });
+  if (cats.length === n) return mk({ kind: 'done', text: T('h_done') });
 
   // État logique de départ : seulement les chats posés
   const cand = new Array(n * n).fill(true);
@@ -78,13 +79,13 @@ function computeHint() {
     for (const g of freeRegs) {
       const a = regCells[g].filter(i => cand[i]);
       if (a.length === 1) return mk({ kind: 'place', target: a[0], zoneCells: new Set(regCells[g]),
-        text: "Dans la zone entourée, il ne reste qu'une seule case libre. Le chat doit donc aller sur cette case." });
+        text: T('h_single_zone') });
     }
     for (const t of ['r', 'c']) {
       for (const x of freeLines[t]) {
         const a = lineCells(t, x).filter(i => cand[i]);
         if (a.length === 1) return mk({ kind: 'place', target: a[0], lineCells: new Set(lineCells(t, x)),
-          text: `Dans la ${lineWord(t)} surlignée, il ne reste qu'une seule case libre. Le chat doit donc y aller.` });
+          text: T('h_single_line', lineWord(t)) });
       }
     }
 
@@ -113,9 +114,7 @@ function computeHint() {
             const elim = [...inLines].filter(i => cand[i] && !rs.has(regions[i]));
             if (elim.length) return mk({ kind: 'elim', elim: new Set(elim), lineCells: inLines,
               zoneCells: new Set(regsIn.flatMap(g => regCells[g])),
-              text: k === 1
-                ? `La zone entourée est entièrement dans la ${word} surlignée. Son chat sera donc forcément dans cette ${lineWord(t)} : toutes les autres cases de la ${lineWord(t)} sont impossibles (✖).`
-                : `Les ${k} zones entourées sont entièrement dans les ${k} ${word} surlignées. Leurs ${k} chats occuperont donc ces ${word} : les cases des autres zones dans ces ${word} sont impossibles (✖).` });
+              text: k === 1 ? T('h_a1', lineWord(t)) : T('h_ak', k, word) });
           }
           // B : ces k lignes n'ont de cases libres que dans k zones
           let R = new Set();
@@ -124,9 +123,7 @@ function computeHint() {
             const elim = [...R].flatMap(g => regCells[g]).filter(i => cand[i] && !inLines.has(i));
             if (elim.length) return mk({ kind: 'elim', elim: new Set(elim), lineCells: inLines,
               zoneCells: new Set([...R].flatMap(g => regCells[g])),
-              text: k === 1
-                ? `Dans la ${word} surlignée, toutes les cases libres sont dans la même zone (entourée). Le chat de cette ${lineWord(t)} est donc dans cette zone : les autres cases de la zone, ailleurs, sont impossibles (✖).`
-                : `Dans les ${k} ${word} surlignées, les cases libres appartiennent à seulement ${k} zones (entourées). Ces zones auront donc leurs chats dans ces ${word} : leurs autres cases, ailleurs, sont impossibles (✖).` });
+              text: k === 1 ? T('h_b1', lineWord(t)) : T('h_bk', k, word) });
           }
         }
       }
@@ -141,11 +138,11 @@ function computeHint() {
       for (const grp of groups) {
         if (grp.kind === 'z' ? regions[i] === grp.g : (grp.kind === 'r' ? rowOf(i) === grp.x : colOf(i) === grp.x)) continue;
         if (!grp.cells.some(j => cand[j] && !gone(i, j))) {
-          const what = grp.kind === 'z' ? 'la zone entourée' : `la ${lineWord(grp.kind)} surlignée`;
+          const what = grp.kind === 'z' ? T('h_what_zone') : T('h_what_line', lineWord(grp.kind));
           return mk({ kind: 'elim', elim: new Set([i]), target: i,
             zoneCells: grp.kind === 'z' ? new Set(grp.cells) : new Set(),
             lineCells: grp.kind === 'z' ? new Set() : new Set(grp.cells),
-            text: `Si on mettait un chat sur la case marquée, ${what} n'aurait plus aucune case libre. Cette case est donc impossible (✖).` });
+            text: T('h_lookahead', what) });
         }
       }
     }
@@ -163,7 +160,7 @@ function computeHint() {
 
   // Aucune astuce simple : on propose de placer un chat (au hasard, choisi quand la joueuse accepte)
   return mk({ kind: 'place', random: true,
-    text: "Je ne vois pas d'astuce simple ici. Si tu veux, je peux placer un chat pour toi, à un endroit au hasard." });
+    text: T('h_random') });
 }
 
 // ----- Affichage de l'indice -----
@@ -173,18 +170,18 @@ const hintApply = document.getElementById('hint-apply');
 
 function showHint() {
   if (generating) return;
-  if (won) { hint = { kind: 'done', zoneCells: new Set(), lineCells: new Set(), elim: new Set(), target: null }; hintText.textContent = 'Tu as déjà gagné ! 😻'; }
+  if (won) { hint = { kind: 'done', zoneCells: new Set(), lineCells: new Set(), elim: new Set(), target: null }; hintText.textContent = T('h_won'); }
   else {
     hint = computeHint();
     // Si on a déjà des chats et qu'aucun n'est mal placé, on le confirme d'abord
     const nCats = marks.filter(m => m === 2).length;
     const ok = (hint.kind === 'place' || hint.kind === 'elim') && nCats > 0
-      ? (nCats === 1 ? '✔ Ton chat est bien placé. ' : `✔ Tes ${nCats} chats sont bien placés. `) : '';
+      ? (nCats === 1 ? T('h_ok1') : T('h_okn', nCats)) : '';
     hintText.textContent = ok + hint.text;
   }
-  const labels = { place: 'Placer le chat', elim: 'Placer les ✖', remove: 'Retirer ce chat' };
+  const labels = { place: T('h_btn_place'), elim: T('h_btn_elim'), remove: T('h_btn_remove') };
   hintApply.hidden = !labels[hint.kind];
-  hintApply.textContent = hint.random ? 'Placer un chat' : (labels[hint.kind] || '');
+  hintApply.textContent = hint.random ? T('h_btn_random') : (labels[hint.kind] || '');
   hintBox.hidden = false;
   document.body.classList.add('hinting');
   const nothingToShow = hint.target === null && !hint.zoneCells.size && !hint.lineCells.size && !hint.elim.size;
@@ -216,5 +213,6 @@ function applyHint() {
 }
 
 document.getElementById('hint-btn').addEventListener('click', showHint);
+document.getElementById('hint-top').addEventListener('click', showHint);
 document.getElementById('hint-apply').addEventListener('click', applyHint);
 document.getElementById('hint-close').addEventListener('click', closeHint);
