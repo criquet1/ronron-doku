@@ -190,7 +190,32 @@ function showHint() {
   const first = hint.target !== null ? hint.target : [...hint.elim][0];
   const el = first !== undefined ? document.getElementById('board').children[first] : null;
   if (el && el.scrollIntoView) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  placeHintBox();
+  setTimeout(placeHintBox, 450); // après le défilement automatique
 }
+
+// La boîte d'indice se met en bas ou en haut de l'écran, selon l'endroit où elle cache le moins
+// les cases dont elle parle.
+function placeHintBox() {
+  if (hintBox.hidden) return;
+  const cells = [...document.querySelectorAll('#board .cell.hint-zone, #board .cell.hint-line, #board .cell.hint-elim, #board .cell.hint-target')];
+  const rects = cells.map((c) => c.getBoundingClientRect()).filter((r) => r.bottom > 0 && r.top < window.innerHeight);
+  const overlap = () => {
+    const b = hintBox.getBoundingClientRect();
+    return rects.filter((r) => r.bottom > b.top && r.top < b.bottom && r.right > b.left && r.left < b.right).length;
+  };
+  const wasTop = hintBox.classList.contains('at-top');
+  hintBox.classList.remove('at-top');
+  const atBottom = overlap();
+  hintBox.classList.add('at-top');
+  const atTop = overlap();
+  const top = atTop < atBottom || (atTop === atBottom && wasTop);
+  hintBox.classList.toggle('at-top', top);
+  document.body.classList.toggle('hint-top', top);
+}
+let hintScrollTimer = null;
+window.addEventListener('scroll', () => { clearTimeout(hintScrollTimer); hintScrollTimer = setTimeout(placeHintBox, 200); }, { passive: true });
+window.addEventListener('resize', () => placeHintBox());
 
 function closeHint() { clearHint(); render(); }
 

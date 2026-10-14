@@ -216,25 +216,30 @@ html[dir="rtl"] #size, html[dir="rtl"] #code-input { direction: ltr; }
 html[dir="rtl"] #message { direction: rtl; }
 
 /* Arabe : l'écriture arabe paraît plus petite à taille égale, on agrandit un peu les textes */
-html[lang="ar"] body { font-family: Tahoma, "Segoe UI", Arial, sans-serif; }
-html[lang="ar"] button, html[lang="ar"] select, html[lang="ar"] input { font-size: 18px; font-family: inherit; }
-html[lang="ar"] #side button, html[lang="ar"] #side select { font-size: 18px; }
-html[lang="ar"] .tagline { font-size: 16px; }
-html[lang="ar"] #counter { font-size: 21px; }
-html[lang="ar"] #game-code, html[lang="ar"] #code-input { font-size: 18px; }
-html[lang="ar"] .credit { font-size: 15px; }
-html[lang="ar"] .panel, html[lang="ar"] #about, html[lang="ar"] #color-editor p { font-size: 18px; }
-html[lang="ar"] .panel h2, html[lang="ar"] #about h2 { font-size: 21px; }
-html[lang="ar"] #hint-text { font-size: 19px; }
-html[lang="ar"] #loading p { font-size: 20px; }
-html[lang="ar"] #message.win { font-size: 25px; }
-html[lang="ar"] #message.win::after { font-size: 16px; }
-html[lang="ar"] #undo span, html[lang="ar"] #hint-btn span { font-size: 14px; }
-html[lang="ar"] #undo, html[lang="ar"] #hint-btn { font-size: 22px; }
+/* Les chiffres paraissent plus gros que les lettres arabes : on les réduit un peu (chiffres 0-9 seulement) */
+@font-face { font-family: "ArDigits"; src: local("Arial"), local("Arimo"), local("Liberation Sans"); unicode-range: U+0030-0039; size-adjust: 73%; }
+html[lang="ar"] body { font-family: "ArDigits", Arial, sans-serif; }
+html[lang="ar"] button, html[lang="ar"] select, html[lang="ar"] input { font-size: 22px; font-family: inherit; }
+html[lang="ar"] #side button, html[lang="ar"] #side select { font-size: 22px; }
+html[lang="ar"] .tagline { font-size: 20px; }
+html[lang="ar"] #counter { font-size: 26px; }
+html[lang="ar"] #game-code, html[lang="ar"] #code-input { font-size: 22px; }
+html[lang="ar"] .credit { font-size: 19px; }
+html[lang="ar"] .panel, html[lang="ar"] #about, html[lang="ar"] #color-editor p { font-size: 22px; }
+html[lang="ar"] .panel h2, html[lang="ar"] #about h2 { font-size: 26px; }
+html[lang="ar"] #hint-text { font-size: 23px; }
+html[lang="ar"] #loading p { font-size: 24px; }
+html[lang="ar"] #message.win { font-size: 31px; }
+html[lang="ar"] #message.win::after { font-size: 20px; }
+html[lang="ar"] #undo span, html[lang="ar"] #hint-btn span { font-size: 18px; }
+html[lang="ar"] #undo, html[lang="ar"] #hint-btn { font-size: 28px; }
 @media (max-width: 800px) {
-  html[lang="ar"] #side button, html[lang="ar"] #side select { font-size: 16px; }
-  html[lang="ar"] #counter { font-size: 18px; }
-  html[lang="ar"] #message.win { font-size: 21px; }
-  html[lang="ar"] .tagline { font-size: 14px; }
-  html[lang="ar"] .panel, html[lang="ar"] #about { font-size: 16px; }
+  html[lang="ar"] #side button, html[lang="ar"] #side select { font-size: 20px; }
+  html[lang="ar"] #counter { font-size: 22px; }
+  html[lang="ar"] #message.win { font-size: 26px; }
+  html[lang="ar"] .tagline { font-size: 18px; }
+  html[lang="ar"] .panel, html[lang="ar"] #about { font-size: 20px; }
 }
+
+/* Boîte d'indice placée en haut de l'écran quand elle cacherait les cases en bas */
+#hint-box.at-top { top: 12px; bottom: auto; }
