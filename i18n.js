@@ -199,13 +199,116 @@ Object.assign(I18N.ar, {
   h_btn_random: 'ضع قطة',
 });
 
+
+// --- Italiano ---
+Object.assign(I18N, { it: {} });
+Object.assign(I18N.it, {
+  tagline: 'Gioco di logica con i gatti · griglie da 5 × 5 fino a 15 × 15',
+  new_game: 'Nuova partita',
+  undo_top: '↩ Indietro',
+  hint_top: '💡 Indizio',
+  reset: 'Ricomincia',
+  rules_btn: '📖 Regole',
+  settings_btn: '⚙️ Impostazioni',
+  rules_h: 'Regole del gioco',
+  rules_p1: 'Metti <b>un gatto</b> in ogni riga, in ogni colonna e in ogni zona colorata. Due gatti non devono mai toccarsi, nemmeno in diagonale.',
+  rules_p2: 'Tocca una casella: ✖ (esclusa), poi il gatto, poi vuota.',
+  rules_p3: 'Le ✖ si posizionano da sole intorno a ogni gatto.',
+  rules_p4: 'Con il mouse puoi anche trascinare su più caselle per mettere delle ✖.',
+  close: 'Chiudi',
+  settings_h: 'Impostazioni',
+  opt_counter: 'Mostra il contatore dei gatti',
+  opt_vanish: 'Nascondi le caselle escluse (invece della ✖)',
+  opt_palette: 'Tavolozza di colori:',
+  pal_douce: 'Morbida',
+  pal_vive: 'Vivace',
+  pal_mixte: 'Mista (vivace e pastello)',
+  pal_pastel: 'Pastello',
+  color_edit: '🎨 Scegli i colori uno per uno',
+  color_help: 'Tocca un colore per cambiarlo. Un colore per ogni zona della griglia attuale.',
+  color_reset: 'Ripristina la tavolozza',
+  copy_link: '📋 Copia il link',
+  code_ph: 'Codice, es. 7-48213',
+  code_go: 'Gioca questo codice',
+  credit: 'Immagine del gatto, per gentile concessione di: <a href="https://www.magnific.com/fr/vecteurs-libre/caricature-chat-mignon-noir_48121656.htm" target="_blank" rel="noopener">brgfx su Magnific</a>',
+  loading: 'Creazione della griglia…<br>Le griglie grandi richiedono qualche secondo.',
+  undo_title: 'Annulla una mossa',
+  undo_word: 'Indietro',
+  hint_title: 'Chiedi un indizio',
+  hint_word: 'Indizio',
+  about_h: 'Informazioni su Ronron-doku',
+  about_p1: 'Ronron-doku è un gioco di logica gratuito che si gioca direttamente nel browser, su computer o su telefono, senza registrazione e senza pubblicità.',
+  about_p2: "<b>L'obiettivo:</b> mettere un gatto in ogni riga, in ogni colonna e in ogni zona colorata, senza che due gatti si tocchino, nemmeno in diagonale. Ogni griglia ha una sola soluzione.",
+  about_li1: 'Griglie da 5 × 5 fino a 15 × 15.',
+  about_li2: 'Le ✖ si posizionano automaticamente intorno ai gatti, e si possono anche far sparire le caselle escluse.',
+  about_li3: 'Un pulsante «Indizio» che spiega il ragionamento passo dopo passo.',
+  about_li4: 'Un pulsante «Indietro» per annullare quante mosse vuoi.',
+  about_li5: 'Un codice partita: con lo stesso codice ritrovi la stessa griglia su qualsiasi dispositivo.',
+  about_li6: 'Diverse tavolozze di colori, con la scelta del colore di ogni zona.',
+  about_li7: 'La tua partita in corso viene salvata automaticamente.',
+  apply: 'Applica',
+  win: 'Bravo! Tutti i gatti sono al posto giusto. Miao!',
+  win_tip: 'Tocca per una nuova partita',
+  counter: (n, total) => `Gatti: ${n} / ${total}`,
+  touching: '  ⚠️ si toccano',
+  game_code: 'Codice della partita: ',
+  img_alt: 'gatto',
+  link_copied: '✓ Link copiato',
+  copy_failed: 'Copia automatica non riuscita: copia il link qui sopra.',
+  bad_code: (sizes) => `Codice non valido. Esempio: 7-48213 (dimensioni possibili: ${sizes})`,
+  h_row: 'riga', h_rows: 'righe', h_col: 'colonna', h_cols: 'colonne',
+  h_remove: 'Questo gatto è nel posto sbagliato: non porta alla soluzione. Puoi toglierlo (o usare «Indietro»).',
+  h_done: 'Tutti i gatti sono già posizionati. Bravo! 😻',
+  h_won: 'Hai già vinto! 😻',
+  h_single_zone: 'Nella zona colorata è rimasta una sola casella libera. Il gatto deve quindi andare su quella casella.',
+  h_single_line: (l) => `Nella ${l} incorniciata è rimasta una sola casella libera. Il gatto deve quindi andare lì.`,
+  h_a1: (l) => `La zona colorata si trova interamente nella ${l} incorniciata. Il suo gatto sarà quindi di sicuro in questa ${l}: tutte le altre caselle della ${l} sono impossibili (✖).`,
+  h_ak: (k, ls) => `Le ${k} zone colorate si trovano interamente nelle ${k} ${ls} incorniciate. I loro ${k} gatti occuperanno quindi queste ${ls}: le caselle delle altre zone in queste ${ls} sono impossibili (✖).`,
+  h_b1: (l) => `Nella ${l} incorniciata, tutte le caselle libere sono nella stessa zona (colorata). Il gatto di questa ${l} è quindi in quella zona: le altre caselle della zona, altrove, sono impossibili (✖).`,
+  h_bk: (k, ls) => `Nelle ${k} ${ls} incorniciate, le caselle libere appartengono a sole ${k} zone (colorate). Queste zone avranno quindi i loro gatti in queste ${ls}: le loro altre caselle, altrove, sono impossibili (✖).`,
+  h_what_zone: 'la zona colorata',
+  h_what_line: (l) => `la ${l} incorniciata`,
+  h_lookahead: (what) => `Se mettessimo un gatto sulla casella segnata, ${what} non avrebbe più nessuna casella libera. Questa casella è quindi impossibile (✖).`,
+  h_random: 'Non vedo un trucco semplice qui. Se vuoi, posso mettere un gatto per te, in un punto a caso.',
+  h_ok1: '✔ Il tuo gatto è al posto giusto. ',
+  h_okn: (n) => `✔ I tuoi ${n} gatti sono al posto giusto. `,
+  h_btn_place: 'Metti il gatto',
+  h_btn_elim: 'Metti le ✖',
+  h_btn_remove: 'Togli questo gatto',
+  h_btn_random: 'Metti un gatto',
+});
+
+const LANGS = ['fr', 'en', 'ar', 'it'];
+
+// Dossier où se trouvent les fichiers du jeu (les pages /en/, /ar/, /it/ sont un niveau plus bas).
+const ASSET_BASE = (document.currentScript && document.currentScript.src)
+  ? document.currentScript.src.replace(/[^/]*$/, '') : '';
+
+// Chaque langue a sa propre page : la langue est celle que la page déclare (<html lang="…">).
+// La page française (à la racine) renvoie vers la langue choisie plus tôt par la joueuse, s'il y en a une.
+function pageLang() {
+  const l = (document.documentElement.lang || 'fr').slice(0, 2).toLowerCase();
+  return LANGS.includes(l) ? l : 'fr';
+}
+
+// Adresse (relative) de la page d'une langue, en gardant le code de partie de l'adresse.
+function langUrl(l) {
+  const sub = pageLang() !== 'fr';              // on est dans /en/, /ar/ ou /it/
+  let u = l === 'fr' ? (sub ? '../' : './') : (sub ? '../' + l + '/' : l + '/');
+  if (location.protocol === 'file:') u += 'index.html';   // pour tester sur l'ordinateur
+  return u + (location.search || '');
+}
+
 function detectLang() {
+  const here = pageLang();
+  if (here !== 'fr') return here;
   try {
     const saved = localStorage.getItem(LANG_KEY);
-    if (saved === 'fr' || saved === 'en' || saved === 'ar') return saved;
+    if (saved && saved !== 'fr' && LANGS.includes(saved)) {
+      location.replace(langUrl(saved));
+    }
   } catch (e) {}
-  const nav = (navigator.language || 'fr').toLowerCase();
-  return nav.startsWith('fr') ? 'fr' : nav.startsWith('ar') ? 'ar' : 'en';
+  return 'fr';
 }
 
 let LANG = detectLang();
@@ -236,16 +339,16 @@ function applyLang() {
   document.documentElement.dir = LANG === 'ar' ? 'rtl' : 'ltr';
   document.title = LANG === 'fr' ? 'Ronron-doku – jeu de logique gratuit avec des chats'
     : LANG === 'ar' ? 'Ronron-doku – لعبة منطق مجانية مع القطط'
+    : LANG === 'it' ? 'Ronron-doku – gioco di logica gratuito con i gatti'
     : 'Ronron-doku – free cat logic puzzle game';
   const sel = document.getElementById('lang');
   if (sel) sel.value = LANG;
 }
 
 function setLang(l) {
-  if (l !== 'fr' && l !== 'en' && l !== 'ar') return;
-  LANG = l;
+  if (!LANGS.includes(l)) return;
   try { localStorage.setItem(LANG_KEY, l); } catch (e) {}
-  applyLang();
+  if (l !== pageLang()) location.href = langUrl(l);
 }
 
 applyLang();

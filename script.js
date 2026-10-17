@@ -13,7 +13,7 @@ const PALETTES = {
            '#e0bbe4', '#d4a5a5', '#a8e6cf', '#ffd3b6', '#c7ceea',
            '#f8c8dc', '#b5ead7', '#fdfd96', '#cfcfc4', '#aec6cf']
 };
-const CAT_IMAGE = 'cat.png';
+const CAT_IMAGE = ASSET_BASE + 'cat.png';
 const MARK = '✖';
 
 // ===== État du jeu =====
@@ -373,7 +373,7 @@ const RESERVE_TARGET = 3;
 function makeGenWorker() {
   if (typeof Worker === 'undefined') return null;
   let w;
-  try { w = new Worker('generator-worker.js'); } catch (e) { return null; }
+  try { w = new Worker(ASSET_BASE + 'generator-worker.js'); } catch (e) { return null; }
   const o = { w, jobs: new Map(), nextId: 1, broken: false };
   w.onmessage = (e) => {
     const cb = o.jobs.get(e.data.id);
@@ -656,10 +656,7 @@ function playCode() {
 }
 document.getElementById('code-go').addEventListener('click', playCode);
 document.getElementById('lang').addEventListener('change', (e) => {
-  setLang(e.target.value);
-  clearHint();
-  codeMsg.textContent = '';
-  render();
+  setLang(e.target.value);   // ouvre la page de la langue choisie
 });
 codeInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') playCode(); });
 document.getElementById('reset').addEventListener('click', resetBoard);

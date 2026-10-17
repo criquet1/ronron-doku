@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Ronron-doku – free cat logic puzzle game</title>
+  <meta name="description" content="Ronron-doku: a free logic game you play in your browser. Place one cat in every row, column and colour zone, with no two cats touching. Grids from 5 × 5 to 15 × 15, step-by-step explained hints, shareable game codes.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Ronron-doku – free cat logic puzzle game">
+  <meta property="og:description" content="One cat per row, per column and per colour zone, with no two cats touching. Grids from 5 × 5 to 15 × 15, step-by-step explained hints, shareable game codes.">
+  <meta property="og:image" content="https://ronrondoku.ca/cat.png">
+  <meta property="og:url" content="https://ronrondoku.ca/en/">
+  <meta property="og:locale" content="en_US">
+  <link rel="canonical" href="https://ronrondoku.ca/en/">
+  <link rel="alternate" hreflang="fr" href="https://ronrondoku.ca/">
+  <link rel="alternate" hreflang="en" href="https://ronrondoku.ca/en/">
+  <link rel="alternate" hreflang="ar" href="https://ronrondoku.ca/ar/">
+  <link rel="alternate" hreflang="it" href="https://ronrondoku.ca/it/">
+  <link rel="alternate" hreflang="x-default" href="https://ronrondoku.ca/">
+  <link rel="icon" href="../cat.png" type="image/png">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <div id="layout">
+    <aside id="side">
+      <h1>🐾 Ronron-doku 🐾</h1>
+      <p class="tagline" data-i18n="tagline">Logic game with cats · grids from 5 × 5 up to 15 × 15</p>
+
+      <div class="controls">
+        <select id="lang" aria-label="Langue / Language"><option value="fr">Français</option><option value="en">English</option><option value="ar">العربية</option><option value="it">Italiano</option></select>
+        <select id="size">
+          <option value="5">5 × 5</option>
+          <option value="6">6 × 6</option>
+          <option value="7" selected>7 × 7</option>
+          <option value="8">8 × 8</option>
+          <option value="9">9 × 9</option>
+          <option value="10">10 × 10</option>
+          <option value="12">12 × 12</option>
+          <option value="15">15 × 15</option>
+        </select>
+        <button id="new-game" data-i18n="new_game">New game</button>
+        <button id="undo-top" data-i18n="undo_top">↩ Undo</button>
+        <button id="hint-top" data-i18n="hint_top">💡 Hint</button>
+        <button id="reset" data-i18n="reset">Restart</button>
+        <button id="rules-btn" data-i18n="rules_btn">📖 Rules</button>
+        <button id="settings-btn" data-i18n="settings_btn">⚙️ Settings</button>
+      </div>
+
+      <div id="rules-panel" class="panel" hidden>
+        <h2 data-i18n="rules_h">Rules</h2>
+        <p data-i18n="rules_p1">Place <b>one cat</b> in every row, every column and every colour zone. Two cats must never touch, even diagonally.</p>
+        <p data-i18n="rules_p2">Click a cell: ✖ (excluded), then the cat, then empty.</p>
+        <p data-i18n="rules_p3">The ✖ are placed automatically around each cat.</p>
+        <p data-i18n="rules_p4">With a mouse, you can also drag across several cells to place ✖.</p>
+        <button id="rules-close" data-i18n="close">Close</button>
+      </div>
+
+      <div id="settings-panel" class="panel" hidden>
+        <h2 data-i18n="settings_h">Settings</h2>
+        <label><input type="checkbox" id="opt-counter" checked> <span data-i18n="opt_counter">Show the cat counter</span></label>
+        <label><input type="checkbox" id="opt-vanish"> <span data-i18n="opt_vanish">Hide excluded cells (instead of ✖)</span></label>
+        <label><span data-i18n="opt_palette">Colour palette:</span>
+          <select id="opt-palette">
+            <option value="douce" data-i18n="pal_douce">Soft</option>
+            <option value="vive" data-i18n="pal_vive">Vivid</option>
+            <option value="mixte" data-i18n="pal_mixte">Mixed (vivid and pastel)</option>
+            <option value="pastel" data-i18n="pal_pastel">Pastel</option>
+          </select>
+        </label>
+        <button id="color-edit-btn" data-i18n="color_edit">🎨 Choose the colours one by one</button>
+        <div id="color-editor" hidden>
+          <p data-i18n="color_help">Click a colour to change it. One colour per zone of the current grid.</p>
+          <div id="color-grid"></div>
+          <button id="color-reset" data-i18n="color_reset">Reset the palette</button>
+        </div>
+        <button id="settings-close" data-i18n="close">Close</button>
+      </div>
+
+      <div id="status">
+        <span id="counter"></span>
+      </div>
+
+      <div id="code-box">
+        <div id="game-code"></div>
+        <button id="copy-link" data-i18n="copy_link">📋 Copy the link</button>
+        <div class="code-row">
+          <input id="code-input" type="text" placeholder="Code, e.g. 7-48213" data-i18n-ph="code_ph" maxlength="80" autocomplete="off">
+          <button id="code-go" data-i18n="code_go">Play this code</button>
+        </div>
+        <small id="code-msg"></small>
+      </div>
+      <p class="credit" data-i18n="credit">Cat image courtesy of: <a href="https://www.magnific.com/fr/vecteurs-libre/caricature-chat-mignon-noir_48121656.htm" target="_blank" rel="noopener">brgfx on Magnific</a></p>
+    </aside>
+
+    <main id="board-area">
+      <div id="loading" hidden>
+        <div class="spinner"></div>
+        <p data-i18n="loading">Creating the grid…<br>Large grids take a few seconds.</p>
+      </div>
+      <div id="undo-wrap"><button id="undo" title="Undo one move" data-i18n-title="undo_title">↩<span data-i18n="undo_word">Undo</span></button>
+        <button id="hint-btn" title="Ask for a hint" data-i18n-title="hint_title">💡<span data-i18n="hint_word">Hint</span></button></div>
+      <div id="board"></div>
+      <p id="message"></p>
+    </main>
+  </div>
+
+  <section id="about">
+    <h2 data-i18n="about_h">About Ronron-doku</h2>
+    <p data-i18n="about_p1">Ronron-doku is a free logic game that you play right in your browser, on a computer or a phone, with no sign-up and no ads.</p>
+    <p data-i18n="about_p2"><b>The goal:</b> place one cat in every row, every column and every colour zone, so that no two cats touch, even diagonally. Every grid has exactly one solution.</p>
+    <ul>
+      <li data-i18n="about_li1">Grids from 5 × 5 up to 15 × 15.</li>
+      <li data-i18n="about_li2">The ✖ are placed automatically around the cats, and you can also make the excluded cells disappear.</li>
+      <li data-i18n="about_li3">A “Hint” button that explains the reasoning step by step.</li>
+      <li data-i18n="about_li4">An “Undo” button to take back as many moves as you like.</li>
+      <li data-i18n="about_li5">A game code: with the same code, you get the same grid on any device.</li>
+      <li data-i18n="about_li6">Several colour palettes, and you can pick the colour of each zone.</li>
+      <li data-i18n="about_li7">Your game in progress is saved automatically.</li>
+    </ul>
+  </section>
+
+  <div id="hint-box" hidden>
+    <p id="hint-text"></p>
+    <div class="hint-actions">
+      <button id="hint-apply" data-i18n="apply">Apply</button>
+      <button id="hint-close" data-i18n="close">Close</button>
+    </div>
+  </div>
+  <script src="../i18n.js"></script>
+  <script src="../gen.js"></script>
+  <script src="../script.js"></script>
+  <script src="../hints.js"></script>
+</body>
+</html>

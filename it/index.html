@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Ronron-doku – gioco di logica gratuito con i gatti</title>
+  <meta name="description" content="Ronron-doku: gioco di logica gratuito da giocare nel browser. Metti un gatto in ogni riga, colonna e zona colorata, senza che due gatti si tocchino. Griglie da 5 × 5 a 15 × 15, indizi spiegati passo dopo passo, codici partita da condividere.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Ronron-doku – gioco di logica gratuito con i gatti">
+  <meta property="og:description" content="Un gatto per riga, per colonna e per zona colorata, senza che due gatti si tocchino. Griglie da 5 × 5 a 15 × 15, indizi spiegati passo dopo passo, codici partita da condividere.">
+  <meta property="og:image" content="https://ronrondoku.ca/cat.png">
+  <meta property="og:url" content="https://ronrondoku.ca/it/">
+  <meta property="og:locale" content="it_IT">
+  <link rel="canonical" href="https://ronrondoku.ca/it/">
+  <link rel="alternate" hreflang="fr" href="https://ronrondoku.ca/">
+  <link rel="alternate" hreflang="en" href="https://ronrondoku.ca/en/">
+  <link rel="alternate" hreflang="ar" href="https://ronrondoku.ca/ar/">
+  <link rel="alternate" hreflang="it" href="https://ronrondoku.ca/it/">
+  <link rel="alternate" hreflang="x-default" href="https://ronrondoku.ca/">
+  <link rel="icon" href="../cat.png" type="image/png">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <div id="layout">
+    <aside id="side">
+      <h1>🐾 Ronron-doku 🐾</h1>
+      <p class="tagline" data-i18n="tagline">Gioco di logica con i gatti · griglie da 5 × 5 fino a 15 × 15</p>
+
+      <div class="controls">
+        <select id="lang" aria-label="Langue / Language"><option value="fr">Français</option><option value="en">English</option><option value="ar">العربية</option><option value="it">Italiano</option></select>
+        <select id="size">
+          <option value="5">5 × 5</option>
+          <option value="6">6 × 6</option>
+          <option value="7" selected>7 × 7</option>
+          <option value="8">8 × 8</option>
+          <option value="9">9 × 9</option>
+          <option value="10">10 × 10</option>
+          <option value="12">12 × 12</option>
+          <option value="15">15 × 15</option>
+        </select>
+        <button id="new-game" data-i18n="new_game">Nuova partita</button>
+        <button id="undo-top" data-i18n="undo_top">↩ Indietro</button>
+        <button id="hint-top" data-i18n="hint_top">💡 Indizio</button>
+        <button id="reset" data-i18n="reset">Ricomincia</button>
+        <button id="rules-btn" data-i18n="rules_btn">📖 Regole</button>
+        <button id="settings-btn" data-i18n="settings_btn">⚙️ Impostazioni</button>
+      </div>
+
+      <div id="rules-panel" class="panel" hidden>
+        <h2 data-i18n="rules_h">Regole del gioco</h2>
+        <p data-i18n="rules_p1">Metti <b>un gatto</b> in ogni riga, in ogni colonna e in ogni zona colorata. Due gatti non devono mai toccarsi, nemmeno in diagonale.</p>
+        <p data-i18n="rules_p2">Tocca una casella: ✖ (esclusa), poi il gatto, poi vuota.</p>
+        <p data-i18n="rules_p3">Le ✖ si posizionano da sole intorno a ogni gatto.</p>
+        <p data-i18n="rules_p4">Con il mouse puoi anche trascinare su più caselle per mettere delle ✖.</p>
+        <button id="rules-close" data-i18n="close">Chiudi</button>
+      </div>
+
+      <div id="settings-panel" class="panel" hidden>
+        <h2 data-i18n="settings_h">Impostazioni</h2>
+        <label><input type="checkbox" id="opt-counter" checked> <span data-i18n="opt_counter">Mostra il contatore dei gatti</span></label>
+        <label><input type="checkbox" id="opt-vanish"> <span data-i18n="opt_vanish">Nascondi le caselle escluse (invece della ✖)</span></label>
+        <label><span data-i18n="opt_palette">Tavolozza di colori:</span>
+          <select id="opt-palette">
+            <option value="douce" data-i18n="pal_douce">Morbida</option>
+            <option value="vive" data-i18n="pal_vive">Vivace</option>
+            <option value="mixte" data-i18n="pal_mixte">Mista (vivace e pastello)</option>
+            <option value="pastel" data-i18n="pal_pastel">Pastello</option>
+          </select>
+        </label>
+        <button id="color-edit-btn" data-i18n="color_edit">🎨 Scegli i colori uno per uno</button>
+        <div id="color-editor" hidden>
+          <p data-i18n="color_help">Tocca un colore per cambiarlo. Un colore per ogni zona della griglia attuale.</p>
+          <div id="color-grid"></div>
+          <button id="color-reset" data-i18n="color_reset">Ripristina la tavolozza</button>
+        </div>
+        <button id="settings-close" data-i18n="close">Chiudi</button>
+      </div>
+
+      <div id="status">
+        <span id="counter"></span>
+      </div>
+
+      <div id="code-box">
+        <div id="game-code"></div>
+        <button id="copy-link" data-i18n="copy_link">📋 Copia il link</button>
+        <div class="code-row">
+          <input id="code-input" type="text" placeholder="Codice, es. 7-48213" data-i18n-ph="code_ph" maxlength="80" autocomplete="off">
+          <button id="code-go" data-i18n="code_go">Gioca questo codice</button>
+        </div>
+        <small id="code-msg"></small>
+      </div>
+      <p class="credit" data-i18n="credit">Immagine del gatto, per gentile concessione di: <a href="https://www.magnific.com/fr/vecteurs-libre/caricature-chat-mignon-noir_48121656.htm" target="_blank" rel="noopener">brgfx su Magnific</a></p>
+    </aside>
+
+    <main id="board-area">
+      <div id="loading" hidden>
+        <div class="spinner"></div>
+        <p data-i18n="loading">Creazione della griglia…<br>Le griglie grandi richiedono qualche secondo.</p>
+      </div>
+      <div id="undo-wrap"><button id="undo" title="Annulla una mossa" data-i18n-title="undo_title">↩<span data-i18n="undo_word">Indietro</span></button>
+        <button id="hint-btn" title="Chiedi un indizio" data-i18n-title="hint_title">💡<span data-i18n="hint_word">Indizio</span></button></div>
+      <div id="board"></div>
+      <p id="message"></p>
+    </main>
+  </div>
+
+  <section id="about">
+    <h2 data-i18n="about_h">Informazioni su Ronron-doku</h2>
+    <p data-i18n="about_p1">Ronron-doku è un gioco di logica gratuito che si gioca direttamente nel browser, su computer o su telefono, senza registrazione e senza pubblicità.</p>
+    <p data-i18n="about_p2"><b>L'obiettivo:</b> mettere un gatto in ogni riga, in ogni colonna e in ogni zona colorata, senza che due gatti si tocchino, nemmeno in diagonale. Ogni griglia ha una sola soluzione.</p>
+    <ul>
+      <li data-i18n="about_li1">Griglie da 5 × 5 fino a 15 × 15.</li>
+      <li data-i18n="about_li2">Le ✖ si posizionano automaticamente intorno ai gatti, e si possono anche far sparire le caselle escluse.</li>
+      <li data-i18n="about_li3">Un pulsante «Indizio» che spiega il ragionamento passo dopo passo.</li>
+      <li data-i18n="about_li4">Un pulsante «Indietro» per annullare quante mosse vuoi.</li>
+      <li data-i18n="about_li5">Un codice partita: con lo stesso codice ritrovi la stessa griglia su qualsiasi dispositivo.</li>
+      <li data-i18n="about_li6">Diverse tavolozze di colori, con la scelta del colore di ogni zona.</li>
+      <li data-i18n="about_li7">La tua partita in corso viene salvata automaticamente.</li>
+    </ul>
+  </section>
+
+  <div id="hint-box" hidden>
+    <p id="hint-text"></p>
+    <div class="hint-actions">
+      <button id="hint-apply" data-i18n="apply">Applica</button>
+      <button id="hint-close" data-i18n="close">Chiudi</button>
+    </div>
+  </div>
+  <script src="../i18n.js"></script>
+  <script src="../gen.js"></script>
+  <script src="../script.js"></script>
+  <script src="../hints.js"></script>
+</body>
+</html>

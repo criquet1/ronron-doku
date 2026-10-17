@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Ronron-doku – لعبة منطق مجانية مع القطط</title>
+  <meta name="description" content="Ronron-doku: لعبة منطق مجانية تُلعب في المتصفح. ضع قطة واحدة في كل صف وعمود ومنطقة ملوّنة، دون أن تتلامس أي قطتين. شبكات من 5 × 5 إلى 15 × 15، وتلميحات مشروحة خطوة بخطوة، ورموز ألعاب قابلة للمشاركة.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Ronron-doku – لعبة منطق مجانية مع القطط">
+  <meta property="og:description" content="قطة واحدة في كل صف وعمود ومنطقة ملوّنة، دون أن تتلامس أي قطتين. شبكات من 5 × 5 إلى 15 × 15، وتلميحات مشروحة خطوة بخطوة، ورموز ألعاب قابلة للمشاركة.">
+  <meta property="og:image" content="https://ronrondoku.ca/cat.png">
+  <meta property="og:url" content="https://ronrondoku.ca/ar/">
+  <meta property="og:locale" content="ar_AR">
+  <link rel="canonical" href="https://ronrondoku.ca/ar/">
+  <link rel="alternate" hreflang="fr" href="https://ronrondoku.ca/">
+  <link rel="alternate" hreflang="en" href="https://ronrondoku.ca/en/">
+  <link rel="alternate" hreflang="ar" href="https://ronrondoku.ca/ar/">
+  <link rel="alternate" hreflang="it" href="https://ronrondoku.ca/it/">
+  <link rel="alternate" hreflang="x-default" href="https://ronrondoku.ca/">
+  <link rel="icon" href="../cat.png" type="image/png">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <div id="layout">
+    <aside id="side">
+      <h1>🐾 Ronron-doku 🐾</h1>
+      <p class="tagline" data-i18n="tagline">لعبة منطق مع القطط · شبكات من ⁦5 × 5⁩ إلى ⁦15 × 15⁩</p>
+
+      <div class="controls">
+        <select id="lang" aria-label="Langue / Language"><option value="fr">Français</option><option value="en">English</option><option value="ar">العربية</option><option value="it">Italiano</option></select>
+        <select id="size">
+          <option value="5">5 × 5</option>
+          <option value="6">6 × 6</option>
+          <option value="7" selected>7 × 7</option>
+          <option value="8">8 × 8</option>
+          <option value="9">9 × 9</option>
+          <option value="10">10 × 10</option>
+          <option value="12">12 × 12</option>
+          <option value="15">15 × 15</option>
+        </select>
+        <button id="new-game" data-i18n="new_game">لعبة جديدة</button>
+        <button id="undo-top" data-i18n="undo_top">↩ تراجع</button>
+        <button id="hint-top" data-i18n="hint_top">💡 تلميح</button>
+        <button id="reset" data-i18n="reset">إعادة البدء</button>
+        <button id="rules-btn" data-i18n="rules_btn">📖 القواعد</button>
+        <button id="settings-btn" data-i18n="settings_btn">⚙️ الإعدادات</button>
+      </div>
+
+      <div id="rules-panel" class="panel" hidden>
+        <h2 data-i18n="rules_h">قواعد اللعبة</h2>
+        <p data-i18n="rules_p1">ضع <b>قطة واحدة</b> في كل صف وكل عمود وكل منطقة ملوّنة. يجب ألّا تتلامس أي قطتين أبدًا، حتى بشكل قطري.</p>
+        <p data-i18n="rules_p2">انقر على خانة: ✖ (مستبعدة)، ثم القطة، ثم فارغة.</p>
+        <p data-i18n="rules_p3">تُوضَع علامات ✖ تلقائيًا حول كل قطة.</p>
+        <p data-i18n="rules_p4">بالفأرة، يمكنك أيضًا السحب فوق عدة خانات لوضع علامات ✖.</p>
+        <button id="rules-close" data-i18n="close">إغلاق</button>
+      </div>
+
+      <div id="settings-panel" class="panel" hidden>
+        <h2 data-i18n="settings_h">الإعدادات</h2>
+        <label><input type="checkbox" id="opt-counter" checked> <span data-i18n="opt_counter">إظهار عدّاد القطط</span></label>
+        <label><input type="checkbox" id="opt-vanish"> <span data-i18n="opt_vanish">إخفاء الخانات المستبعدة (بدل ✖)</span></label>
+        <label><span data-i18n="opt_palette">لوحة الألوان:</span>
+          <select id="opt-palette">
+            <option value="douce" data-i18n="pal_douce">هادئة</option>
+            <option value="vive" data-i18n="pal_vive">زاهية</option>
+            <option value="mixte" data-i18n="pal_mixte">مختلطة (زاهية وباستيل)</option>
+            <option value="pastel" data-i18n="pal_pastel">باستيل</option>
+          </select>
+        </label>
+        <button id="color-edit-btn" data-i18n="color_edit">🎨 اختيار الألوان واحدًا واحدًا</button>
+        <div id="color-editor" hidden>
+          <p data-i18n="color_help">انقر على لون لتغييره. لون واحد لكل منطقة في الشبكة الحالية.</p>
+          <div id="color-grid"></div>
+          <button id="color-reset" data-i18n="color_reset">استعادة اللوحة</button>
+        </div>
+        <button id="settings-close" data-i18n="close">إغلاق</button>
+      </div>
+
+      <div id="status">
+        <span id="counter"></span>
+      </div>
+
+      <div id="code-box">
+        <div id="game-code"></div>
+        <button id="copy-link" data-i18n="copy_link">📋 نسخ الرابط</button>
+        <div class="code-row">
+          <input id="code-input" type="text" placeholder="الرمز، مثال 7-48213" data-i18n-ph="code_ph" maxlength="80" autocomplete="off">
+          <button id="code-go" data-i18n="code_go">العب بهذا الرمز</button>
+        </div>
+        <small id="code-msg"></small>
+      </div>
+      <p class="credit" data-i18n="credit">صورة القطة بإذن من: <a href="https://www.magnific.com/fr/vecteurs-libre/caricature-chat-mignon-noir_48121656.htm" target="_blank" rel="noopener">brgfx على Magnific</a></p>
+    </aside>
+
+    <main id="board-area">
+      <div id="loading" hidden>
+        <div class="spinner"></div>
+        <p data-i18n="loading">جارٍ إنشاء الشبكة…<br>الشبكات الكبيرة تستغرق بضع ثوانٍ.</p>
+      </div>
+      <div id="undo-wrap"><button id="undo" title="التراجع عن حركة" data-i18n-title="undo_title">↩<span data-i18n="undo_word">تراجع</span></button>
+        <button id="hint-btn" title="اطلب تلميحًا" data-i18n-title="hint_title">💡<span data-i18n="hint_word">تلميح</span></button></div>
+      <div id="board"></div>
+      <p id="message"></p>
+    </main>
+  </div>
+
+  <section id="about">
+    <h2 data-i18n="about_h">عن Ronron-doku</h2>
+    <p data-i18n="about_p1">Ronron-doku لعبة منطق مجانية تُلعب مباشرة في المتصفح، على الحاسوب أو الهاتف، بدون تسجيل وبدون إعلانات.</p>
+    <p data-i18n="about_p2"><b>الهدف:</b> ضع قطة واحدة في كل صف وكل عمود وكل منطقة ملوّنة، بحيث لا تتلامس أي قطتين، حتى بشكل قطري. لكل شبكة حل واحد فقط.</p>
+    <ul>
+      <li data-i18n="about_li1">شبكات من ⁦5 × 5⁩ إلى ⁦15 × 15⁩.</li>
+      <li data-i18n="about_li2">تُوضَع علامات ✖ تلقائيًا حول القطط، ويمكن أيضًا إخفاء الخانات المستبعدة.</li>
+      <li data-i18n="about_li3">زر «تلميح» يشرح التفكير خطوة بخطوة.</li>
+      <li data-i18n="about_li4">زر «تراجع» للتراجع عن أي عدد من الحركات.</li>
+      <li data-i18n="about_li5">رمز للّعبة: بنفس الرمز تحصل على الشبكة نفسها على أي جهاز.</li>
+      <li data-i18n="about_li6">عدة لوحات ألوان، مع إمكانية اختيار لون كل منطقة.</li>
+      <li data-i18n="about_li7">يتم حفظ لعبتك الجارية تلقائيًا.</li>
+    </ul>
+  </section>
+
+  <div id="hint-box" hidden>
+    <p id="hint-text"></p>
+    <div class="hint-actions">
+      <button id="hint-apply" data-i18n="apply">تطبيق</button>
+      <button id="hint-close" data-i18n="close">إغلاق</button>
+    </div>
+  </div>
+  <script src="../i18n.js"></script>
+  <script src="../gen.js"></script>
+  <script src="../script.js"></script>
+  <script src="../hints.js"></script>
+</body>
+</html>

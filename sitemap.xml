@@ -1,4 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://ronrondoku.ca/</loc></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://ronrondoku.ca/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ronrondoku.ca/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ronrondoku.ca/en/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ronrondoku.ca/ar/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://ronrondoku.ca/it/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ronrondoku.ca/"/>
+  </url>
+  <url>
+    <loc>https://ronrondoku.ca/en/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ronrondoku.ca/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ronrondoku.ca/en/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ronrondoku.ca/ar/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://ronrondoku.ca/it/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ronrondoku.ca/"/>
+  </url>
+  <url>
+    <loc>https://ronrondoku.ca/ar/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ronrondoku.ca/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ronrondoku.ca/en/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ronrondoku.ca/ar/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://ronrondoku.ca/it/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ronrondoku.ca/"/>
+  </url>
+  <url>
+    <loc>https://ronrondoku.ca/it/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ronrondoku.ca/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ronrondoku.ca/en/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ronrondoku.ca/ar/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://ronrondoku.ca/it/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ronrondoku.ca/"/>
+  </url>
 </urlset>
