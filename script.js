@@ -352,9 +352,10 @@ function parseCode(text) {
   return { size, seed };
 }
 
+// On n'écrit plus le code dans l'adresse : sinon un favori ou une suggestion du navigateur
+// rouvrait toujours cette grille-là au lieu de ta partie en cours (le code reste dans « Copier le lien »).
 function updateUrl() {
-  if (!gameCode) return;
-  try { window.history.replaceState(null, '', '?partie=' + gameCode); } catch (e) {}
+  try { window.history.replaceState(null, '', location.pathname); } catch (e) {}
 }
 
 function shareLink() {
